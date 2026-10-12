@@ -5,6 +5,8 @@ node_modules/
 !.env.example
 
 /frontend/build/
+/backend/dist/
+*.tsbuildinfo
 coverage/
 
 /backend/data/*.json
