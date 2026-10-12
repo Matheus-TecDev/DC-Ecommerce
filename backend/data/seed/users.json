@@ -1,0 +1,16 @@
+[
+  {
+    "id": "11111111-1111-4111-8111-111111111111",
+    "user": "Cliente Demo",
+    "email": "cliente@digitalstore.example",
+    "password": "$2b$10$M.7z8cRSH4o8l7xzzwGJueXjVwUwr5SbL/2YJ6DjwFpBFoN69iN1q",
+    "role": "customer"
+  },
+  {
+    "id": "22222222-2222-4222-8222-222222222222",
+    "user": "Admin Demo",
+    "email": "admin@digitalstore.example",
+    "password": "$2b$10$7td9LRsxehrigQgiTzCjjOiTNsCItglIBf/Mokw9Ll2xtcczaeTdm",
+    "role": "admin"
+  }
+]

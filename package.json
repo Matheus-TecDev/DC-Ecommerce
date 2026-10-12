@@ -1,0 +1,24 @@
+{
+  "name": "dc-ecommerce",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Digital Store - e-commerce Full Stack educacional (React + Node.js/Express) desenvolvido na Digital College.",
+  "engines": {
+    "node": ">=18.11"
+  },
+  "scripts": {
+    "setup": "node scripts/setup-env.js",
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "dev": "concurrently -n api,web -c magenta,cyan \"npm --prefix backend run dev\" \"npm --prefix frontend start\"",
+    "start:backend": "npm --prefix backend start",
+    "start:frontend": "npm --prefix frontend start",
+    "build": "npm --prefix frontend run build",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "npm --prefix backend test",
+    "test:frontend": "npm --prefix frontend test -- --watchAll=false",
+    "validate": "npm test && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.5"
+  }
+}

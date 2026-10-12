@@ -1,0 +1,110 @@
+[
+  {
+    "categoria": "Casual",
+    "titulo": "Tênis Urban Flow",
+    "descricao": "Tênis casual para o dia a dia, com cabedal respirável e solado macio.",
+    "valor": 219,
+    "desconto": 0,
+    "img": "/imagens/tenis-casual.png",
+    "id": "1"
+  },
+  {
+    "categoria": "Corrida",
+    "titulo": "Tênis Sprint Pro",
+    "descricao": "Leve e responsivo, pensado para treinos de corrida em asfalto.",
+    "valor": 349.9,
+    "desconto": 15,
+    "img": "/imagens/tenis-corrida.png",
+    "id": "2"
+  },
+  {
+    "categoria": "Esporte e lazer",
+    "titulo": "Tênis Court Classic",
+    "descricao": "Modelo de quadra com visual retrô e amortecimento reforçado.",
+    "valor": 299,
+    "desconto": 10,
+    "img": "/imagens/tenis-colecionador.png",
+    "id": "3"
+  },
+  {
+    "categoria": "Casual",
+    "titulo": "Tênis Street Mix",
+    "descricao": "Combinação de cores para compor looks urbanos com conforto.",
+    "valor": 259.9,
+    "desconto": 20,
+    "img": "/imagens/tenis-casual.png",
+    "id": "4"
+  },
+  {
+    "categoria": "Corrida",
+    "titulo": "Tênis Trail Runner",
+    "descricao": "Solado com tração extra para trilhas e terrenos irregulares.",
+    "valor": 429,
+    "desconto": 25,
+    "img": "/imagens/tenis-corrida.png",
+    "id": "5"
+  },
+  {
+    "categoria": "Esporte e lazer",
+    "titulo": "Tênis Flex Training",
+    "descricao": "Flexível e estável para treinos funcionais e academia.",
+    "valor": 279,
+    "desconto": 0,
+    "img": "/imagens/tenis-colecionador.png",
+    "id": "6"
+  },
+  {
+    "categoria": "Casual",
+    "titulo": "Tênis Daily Comfort",
+    "descricao": "Palmilha anatômica e ajuste confortável para usar o dia inteiro.",
+    "valor": 189.9,
+    "desconto": 5,
+    "img": "/imagens/tenis-casual.png",
+    "id": "7"
+  },
+  {
+    "categoria": "Corrida",
+    "titulo": "Tênis Marathon Elite",
+    "descricao": "Placa de propulsão e espuma de alto retorno para longas distâncias.",
+    "valor": 599,
+    "desconto": 30,
+    "img": "/imagens/tenis-corrida.png",
+    "id": "8"
+  },
+  {
+    "categoria": "Utilitário",
+    "titulo": "Tênis Work Shield",
+    "descricao": "Resistente e antiderrapante, ideal para longas jornadas em pé.",
+    "valor": 239,
+    "desconto": 10,
+    "img": "/imagens/tenis-colecionador.png",
+    "id": "9"
+  },
+  {
+    "categoria": "Casual",
+    "titulo": "Tênis Retro Wave",
+    "descricao": "Inspirado nos clássicos dos anos 90, com acabamento em camurça.",
+    "valor": 319.9,
+    "desconto": 15,
+    "img": "/imagens/tenis-casual.png",
+    "id": "10"
+  },
+  {
+    "categoria": "Esporte e lazer",
+    "titulo": "Tênis Jump Hoops",
+    "descricao": "Cano médio e suporte lateral para jogos de basquete.",
+    "valor": 459,
+    "desconto": 20,
+    "img": "/imagens/tenis-colecionador.png",
+    "id": "11"
+  },
+  {
+    "categoria": "Corrida",
+    "titulo": "Tênis Cloud Pace",
+    "descricao": "Amortecimento macio para rodagens leves e recuperação.",
+    "valor": 379,
+    "desconto": 10,
+    "img": "/imagens/tenis-corrida.png",
+    "id": "12"
+  }
+]
