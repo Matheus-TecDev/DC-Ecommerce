@@ -1,26 +1,31 @@
-const express = require("express");
-const bcrypt = require("bcrypt");
-const config = require("../config");
-const store = require("../lib/store");
-const { erro, assincrono, texto } = require("../lib/http");
-const { isAuthenticated, isAdmin } = require("../middleware/isAuthenticated");
-const { normalizarEmail, emailValido, senhaValida, semSenha, SENHA } = require("../lib/usuarios");
+import bcrypt from "bcrypt";
+import { Router } from "express";
+import type { RequestHandler } from "express";
+import type { ParamsDictionary } from "express-serve-static-core";
+import config from "../config";
+import { assincrono, corpo, erro, texto, usuarioAutenticado } from "../lib/http";
+import * as store from "../lib/store";
+import { SENHA, emailValido, normalizarEmail, semSenha, senhaValida } from "../lib/usuarios";
+import { isAdmin, isAuthenticated } from "../middleware/isAuthenticated";
+import type { ParametroId } from "../types/api";
+import type { UsuarioPublico } from "../types/modelos";
 
-const router = express.Router();
+const router = Router();
 
 router.use(isAuthenticated);
 
-function donoOuAdmin(req, res, next) {
-  if (req.user.id !== req.params.id && req.user.role !== "admin") {
+const donoOuAdmin: RequestHandler<ParametroId> = (req, _res, next) => {
+  const autenticado = usuarioAutenticado(req);
+  if (autenticado.id !== req.params.id && autenticado.role !== "admin") {
     return next(erro(403, "Você não tem permissão para acessar este usuário"));
   }
   next();
-}
+};
 
 router.get(
   "/",
   isAdmin,
-  assincrono(async (req, res) => {
+  assincrono<ParamsDictionary, UsuarioPublico[]>(async (_req, res) => {
     const users = await store.ler("users");
     res.json(users.map(semSenha));
   })
@@ -29,7 +34,7 @@ router.get(
 router.get(
   "/:id",
   donoOuAdmin,
-  assincrono(async (req, res) => {
+  assincrono<ParametroId, UsuarioPublico>(async (req, res) => {
     const users = await store.ler("users");
     const usuarioSelecionado = users.find((usuario) => usuario.id === req.params.id);
     if (!usuarioSelecionado) {
@@ -39,9 +44,10 @@ router.get(
   })
 );
 
-const update = assincrono(async (req, res) => {
-  const { user, password } = req.body;
-  const email = req.body.email === undefined ? undefined : normalizarEmail(req.body.email);
+const update = assincrono<ParametroId, UsuarioPublico>(async (req, res) => {
+  const body = corpo(req);
+  const { user, password } = body;
+  const email = body.email === undefined ? undefined : normalizarEmail(body.email);
 
   if (user === undefined && email === undefined && password === undefined) {
     throw erro(400, "Envie ao menos um campo para atualizar: user, email ou password");
@@ -81,13 +87,14 @@ router.patch("/:id", donoOuAdmin, update);
 router.delete(
   "/:id",
   donoOuAdmin,
-  assincrono(async (req, res) => {
+  assincrono<ParametroId, UsuarioPublico>(async (req, res) => {
     const deletedUser = await store.atualizar("users", (users) => {
       const indice = users.findIndex((u) => u.id === req.params.id);
-      if (indice === -1) {
+      const [removido] = indice === -1 ? [] : users.splice(indice, 1);
+      if (!removido) {
         throw erro(404, "Usuário não encontrado");
       }
-      return users.splice(indice, 1)[0];
+      return removido;
     });
 
     await store.atualizar("carrinho", (carrinhos) => {
@@ -99,4 +106,4 @@ router.delete(
   })
 );
 
-module.exports = router;
+export default router;

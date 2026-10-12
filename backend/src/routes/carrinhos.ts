@@ -1,23 +1,32 @@
-const express = require("express");
-const store = require("../lib/store");
-const { erro, assincrono, texto } = require("../lib/http");
-const { isAuthenticated } = require("../middleware/isAuthenticated");
+import { Router } from "express";
+import type { Request } from "express";
+import type { ParamsDictionary } from "express-serve-static-core";
+import { assincrono, corpo, erro, texto, usuarioAutenticado } from "../lib/http";
+import * as store from "../lib/store";
+import { isAuthenticated } from "../middleware/isAuthenticated";
+import type { CarrinhoDetalhado, ItemCarrinhoDetalhado, ParametroProdutoId } from "../types/api";
+import type { Carrinho } from "../types/modelos";
 
-const router = express.Router();
+const router = Router();
 
 const QUANTIDADE_MAXIMA = 99;
 
 router.use(isAuthenticated);
 
-function arredondar(valor) {
+function arredondar(valor: number): number {
   return Math.round(valor * 100) / 100;
 }
 
-function quantidadeValida(quantidade) {
-  return Number.isInteger(quantidade) && quantidade >= 1 && quantidade <= QUANTIDADE_MAXIMA;
+function quantidadeValida(quantidade: unknown): quantidade is number {
+  return (
+    typeof quantidade === "number" &&
+    Number.isInteger(quantidade) &&
+    quantidade >= 1 &&
+    quantidade <= QUANTIDADE_MAXIMA
+  );
 }
 
-function carrinhoDoUsuario(carrinhos, userId) {
+function carrinhoDoUsuario(carrinhos: Carrinho[], userId: string): Carrinho {
   let carrinho = carrinhos.find((c) => c.id === userId);
   if (!carrinho) {
     carrinho = { id: userId, produtos: [], desconto: 0 };
@@ -26,9 +35,9 @@ function carrinhoDoUsuario(carrinhos, userId) {
   return carrinho;
 }
 
-async function detalhar(carrinho) {
+async function detalhar(carrinho: Pick<Carrinho, "produtos" | "desconto">): Promise<CarrinhoDetalhado> {
   const produtos = await store.ler("produtos");
-  const itens = [];
+  const itens: ItemCarrinhoDetalhado[] = [];
   let valorBruto = 0;
   let subtotal = 0;
 
@@ -66,10 +75,13 @@ async function detalhar(carrinho) {
   };
 }
 
-function responderCarrinho(alterar) {
-  return assincrono(async (req, res) => {
+function responderCarrinho<P = ParamsDictionary>(
+  alterar: (carrinho: Carrinho, req: Request<P, CarrinhoDetalhado, unknown>) => void | Promise<void>
+) {
+  return assincrono<P, CarrinhoDetalhado>(async (req, res) => {
+    const userId = usuarioAutenticado(req).id;
     const carrinho = await store.atualizar("carrinho", async (carrinhos) => {
-      const meuCarrinho = carrinhoDoUsuario(carrinhos, req.user.id);
+      const meuCarrinho = carrinhoDoUsuario(carrinhos, userId);
       await alterar(meuCarrinho, req);
       return meuCarrinho;
     });
@@ -79,9 +91,10 @@ function responderCarrinho(alterar) {
 
 router.get(
   "/",
-  assincrono(async (req, res) => {
+  assincrono<ParamsDictionary, CarrinhoDetalhado>(async (req, res) => {
+    const userId = usuarioAutenticado(req).id;
     const carrinhos = await store.ler("carrinho");
-    const carrinho = carrinhos.find((c) => c.id === req.user.id) || { produtos: [], desconto: 0 };
+    const carrinho = carrinhos.find((c) => c.id === userId) || { produtos: [], desconto: 0 };
     res.json(await detalhar(carrinho));
   })
 );
@@ -89,7 +102,7 @@ router.get(
 router.post(
   "/itens",
   responderCarrinho(async (carrinho, req) => {
-    const { produto_id, quantidade = 1 } = req.body;
+    const { produto_id, quantidade = 1 } = corpo(req);
     if (!texto(produto_id, { max: 20 })) {
       throw erro(422, "Informe o produto_id");
     }
@@ -112,8 +125,8 @@ router.post(
 
 router.patch(
   "/itens/:produtoId",
-  responderCarrinho((carrinho, req) => {
-    const { quantidade } = req.body;
+  responderCarrinho<ParametroProdutoId>((carrinho, req) => {
+    const { quantidade } = corpo(req);
     if (!quantidadeValida(quantidade)) {
       throw erro(422, `quantidade deve ser um inteiro entre 1 e ${QUANTIDADE_MAXIMA}`);
     }
@@ -127,7 +140,7 @@ router.patch(
 
 router.delete(
   "/itens/:produtoId",
-  responderCarrinho((carrinho, req) => {
+  responderCarrinho<ParametroProdutoId>((carrinho, req) => {
     const indice = carrinho.produtos.findIndex((p) => p.produto_id === req.params.produtoId);
     if (indice === -1) {
       throw erro(404, "Item não encontrado no carrinho");
@@ -143,4 +156,4 @@ router.delete(
   })
 );
 
-module.exports = router;
+export default router;

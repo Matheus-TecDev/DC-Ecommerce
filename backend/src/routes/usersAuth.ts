@@ -1,22 +1,26 @@
-const crypto = require("crypto");
-const express = require("express");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const config = require("../config");
-const store = require("../lib/store");
-const { erro, assincrono, texto } = require("../lib/http");
-const { isAuthenticated } = require("../middleware/isAuthenticated");
-const { SENHA, normalizarEmail, emailValido, senhaValida, semSenha } = require("../lib/usuarios");
+import crypto from "crypto";
+import bcrypt from "bcrypt";
+import { Router } from "express";
+import type { ParamsDictionary } from "express-serve-static-core";
+import jwt from "jsonwebtoken";
+import config from "../config";
+import { assincrono, corpo, erro, texto, usuarioAutenticado } from "../lib/http";
+import * as store from "../lib/store";
+import { SENHA, emailValido, normalizarEmail, semSenha, senhaValida } from "../lib/usuarios";
+import { isAuthenticated } from "../middleware/isAuthenticated";
+import type { RespostaLogin } from "../types/api";
+import type { PayloadJwt, Usuario, UsuarioPublico } from "../types/modelos";
 
-const router = express.Router();
+const router = Router();
 
 const HASH_FICTICIO = bcrypt.hashSync("senha-inexistente", config.saltRounds);
 
 router.post(
   "/signup",
-  assincrono(async (req, res) => {
-    const { user, password } = req.body;
-    const email = normalizarEmail(req.body.email);
+  assincrono<ParamsDictionary, UsuarioPublico>(async (req, res) => {
+    const body = corpo(req);
+    const { user, password } = body;
+    const email = normalizarEmail(body.email);
 
     if (!texto(user, { min: 2, max: 80 })) {
       throw erro(422, "Informe um nome com 2 a 80 caracteres");
@@ -34,7 +38,7 @@ router.post(
       if (users.some((u) => u.email === email)) {
         throw erro(409, "Usuário já existente");
       }
-      const newUser = {
+      const newUser: Usuario = {
         id: crypto.randomUUID(),
         user: user.trim(),
         email,
@@ -51,9 +55,10 @@ router.post(
 
 router.post(
   "/login",
-  assincrono(async (req, res) => {
-    const { password } = req.body;
-    const email = normalizarEmail(req.body.email);
+  assincrono<ParamsDictionary, RespostaLogin>(async (req, res) => {
+    const body = corpo(req);
+    const { password } = body;
+    const email = normalizarEmail(body.email);
 
     if (!email || typeof password !== "string" || !password) {
       throw erro(422, "Informe e-mail e senha");
@@ -67,7 +72,8 @@ router.post(
       throw erro(401, "E-mail ou senha inválidos");
     }
 
-    const token = jwt.sign({ sub: user.id }, config.jwtSecret, {
+    const payload: PayloadJwt = { sub: user.id };
+    const token = jwt.sign(payload, config.jwtSecret, {
       algorithm: "HS256",
       expiresIn: config.jwtExpiresIn,
     });
@@ -75,8 +81,8 @@ router.post(
   })
 );
 
-router.get("/me", isAuthenticated, (req, res) => {
-  res.json(req.user);
+router.get<ParamsDictionary, UsuarioPublico>("/me", isAuthenticated, (req, res) => {
+  res.json(usuarioAutenticado(req));
 });
 
-module.exports = router;
+export default router;
