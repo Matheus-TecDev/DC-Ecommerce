@@ -1,14 +1,35 @@
 # Digital Store API
 
-REST API of the Digital Store project: Node.js, Express, JWT authentication and JSON file
+REST API of the Digital Store project: Node.js, Express, TypeScript, JWT authentication and JSON file
 persistence. Setup, environment variables and limitations are described in the
 [main README](../README.md).
 
-```bash
-npm start     # node ./bin/www
-npm run dev   # restarts on file changes
-npm test      # node:test + Supertest
-```
+## Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Runs `src/server.ts` with `tsx` and restarts on file changes |
+| `npm run typecheck` | `tsc --noEmit` over `src` and `test` |
+| `npm run build` | Removes `dist` and compiles `src` to `dist` (`tsconfig.build.json`) |
+| `npm start` | Runs the compiled server, `node dist/server.js` (build first) |
+| `npm test` | `node:test` + Supertest, executed from the TypeScript sources with `tsx` |
+
+## TypeScript
+
+- `strict` mode plus `noUncheckedIndexedAccess`, `noImplicitReturns`, `noUnusedLocals` and
+  `noUnusedParameters`. The sources in `src` have no `any` annotations, `@ts-ignore`, non-null
+  assertions or type assertions (only `as const`).
+- Modules are CommonJS (`"module": "node16"` in a package without `"type": "module"`), the same module
+  system the JavaScript version used.
+- Sources live in `src`, tests in `test`, and the build output in `dist`, which is git-ignored.
+  `data/seed` and `public/imagens` stay at the package root and are resolved relative to it, so they
+  are found both from `src` (development, tests) and from `dist` (compiled).
+- `src/types/modelos.ts` holds the stored entities (`Usuario`, `Produto`, `Carrinho`, `ItemCarrinho`),
+  the public user (`UsuarioPublico`, without the password hash), `Credenciais` and `PayloadJwt`.
+  `src/types/api.ts` holds the response shapes, and `src/types/express.d.ts` adds the authenticated
+  user to the Express request.
+- Request bodies, query strings, JWT payloads and the JSON files are treated as `unknown` and narrowed
+  with type guards before use.
 
 ## Conventions
 
@@ -115,3 +136,7 @@ Accounts are created through `/userauth/signup`. Passwords are never returned.
 `data/seed/*.json` holds fictional demo data. On first use each file is copied to `data/`, which is
 git-ignored and holds the runtime state. `DATA_DIR` can point the store somewhere else (the tests use
 a temporary directory).
+
+Every read validates the file against the models in `src/lib/colecoes.ts`. Records are checked, not
+rewritten: the on-disk format is the same one the JavaScript version produced, and unknown fields are
+kept. A file that does not match makes the request fail with `500` and is never overwritten.
