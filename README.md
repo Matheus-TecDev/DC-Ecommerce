@@ -2,7 +2,7 @@
 
 An educational e-commerce storefront built as a team project in the Full Stack course at
 Digital College (Fortaleza, Brazil). A React single-page application
-consumes a Node.js/Express REST API with JWT authentication.
+consumes a Node.js/Express REST API, written in TypeScript, with JWT authentication.
 
 The frontend and the backend were originally developed in two separate repositories. This monorepo
 brings them together, connects the main user flows to the API and fixes the security problems found
@@ -42,24 +42,29 @@ in the original code.
 | Layer | Technologies |
 | --- | --- |
 | Frontend | React 18, React Router 6, Sass (CSS Modules), Create React App |
-| Backend | Node.js, Express 4, jsonwebtoken, bcrypt, cors, dotenv |
+| Backend | Node.js, TypeScript (strict mode, CommonJS output), Express 4, jsonwebtoken, bcrypt, cors, dotenv |
 | Persistence | JSON files on disk |
-| Tests | `node:test` + Supertest (API), Jest + React Testing Library (frontend) |
+| Tests | `node:test` + Supertest, run through `tsx` (API), Jest + React Testing Library (frontend) |
 
 ## Repository structure
 
 ```text
 .
 ├── backend/
-│   ├── app.js               # Express app: CORS, routes, JSON error handler
-│   ├── bin/www              # HTTP server entry point
-│   ├── config.js            # environment variables (fails fast without JWT_SECRET)
-│   ├── lib/                 # JSON file store, HTTP/validation helpers
-│   ├── middleware/          # JWT authentication and admin check
-│   ├── routes/              # produtos, userauth, users, carrinho
+│   ├── src/
+│   │   ├── server.ts        # HTTP server entry point
+│   │   ├── app.ts           # Express app: CORS, routes, JSON error handler
+│   │   ├── config.ts        # environment variables (fails fast without JWT_SECRET)
+│   │   ├── types/           # entities, API responses, Express request augmentation
+│   │   ├── lib/             # JSON file store, record validation, HTTP helpers
+│   │   ├── middleware/      # JWT authentication and admin check
+│   │   └── routes/          # produtos, userauth, users, carrinho
+│   ├── test/                # API tests (TypeScript)
 │   ├── data/seed/           # fictional demo data (versioned)
 │   ├── public/imagens/      # demo product images
-│   └── test/                # API tests
+│   ├── dist/                # compiled JavaScript (generated, git-ignored)
+│   ├── tsconfig.json        # type-check configuration (src + test)
+│   └── tsconfig.build.json  # build configuration (src -> dist)
 ├── frontend/
 │   └── src/
 │       ├── services/api.js  # API client (base URL, token, errors)
@@ -99,6 +104,9 @@ The full endpoint reference is in [backend/README.md](backend/README.md).
 
 Requirements: npm and Node.js 18.11 or newer (developed and tested only on Node.js 24).
 
+The backend is TypeScript. In development it runs straight from the sources with `tsx`; for
+production-style execution it is compiled to `backend/dist` and started with plain Node.js.
+
 ```bash
 npm run install:all   # installs root, backend and frontend dependencies
 npm run setup         # creates .env from .env.example with a random JWT_SECRET
@@ -106,6 +114,13 @@ npm run dev           # API on http://localhost:3001, frontend on http://localho
 ```
 
 Then open <http://localhost:3000>.
+
+To run the compiled API instead of the development server:
+
+```bash
+npm run build:backend   # tsc: backend/src -> backend/dist
+npm --prefix backend start
+```
 
 ### Environment variables
 
@@ -115,7 +130,7 @@ Backend variables live in a `.env` file at the repository root (never committed)
 | --- | --- | --- |
 | `JWT_SECRET` | — (required) | Token signing secret, at least 32 characters. The API refuses to start without it. |
 | `PORT` | `3001` | API port |
-| `JWT_EXPIRES_IN` | `1h` | Token lifetime |
+| `JWT_EXPIRES_IN` | `1h` | Token lifetime, as a duration such as `15m`, `1h` or `7d`. The API refuses to start with an invalid value. |
 | `SALT_HASH` | `10` | bcrypt cost factor |
 | `CORS_ORIGIN` | `http://localhost:3000` | Comma-separated list of allowed origins |
 
@@ -152,11 +167,16 @@ Run from the repository root:
 | `npm run install:all` | Installs all dependencies |
 | `npm run setup` | Creates `.env` (does not overwrite an existing one) |
 | `npm run dev` | Starts API and frontend together, with reload |
-| `npm run start:backend` / `npm run start:frontend` | Starts one of them |
+| `npm run start:backend` | Compiles the API and starts the compiled JavaScript |
+| `npm run start:frontend` | Starts the frontend development server |
+| `npm run typecheck` | Type-checks the backend sources and tests (`tsc --noEmit`) |
 | `npm test` | Runs backend and frontend tests |
 | `npm run test:backend` / `npm run test:frontend` | Runs one suite |
-| `npm run build` | Production build of the frontend (`frontend/build`) |
-| `npm run validate` | Tests, then build |
+| `npm run build` | Builds the backend (`backend/dist`) and the frontend (`frontend/build`) |
+| `npm run build:backend` / `npm run build:frontend` | Builds one of them |
+| `npm run validate` | Type check, tests, then both builds |
+
+Backend-only scripts are listed in [backend/README.md](backend/README.md).
 
 ## Tests
 
@@ -167,7 +187,8 @@ npm test
 - **Backend** (`backend/test`): sign-up, login with valid and invalid credentials, JWT verification
   (tampered, expired, wrong secret, unsigned, deleted account), blocked unauthenticated and
   non-admin access, product queries, input validation, JSON error responses, CORS, cart ownership and
-  concurrent writes. The tests use a temporary data directory and their own secret, so they never
+  concurrent writes, seed copying, stored-record validation and the on-disk file format. The tests
+  are written in TypeScript, use a temporary data directory and their own secret, so they never
   touch local data.
 - **Frontend** (`frontend/src/App.test.js`): the whole application is rendered and only `fetch` is
   replaced by a fake API with the same contract — product listing and search, API failure message,
@@ -201,6 +222,11 @@ Changes made to the original code when the two projects were merged:
 - **Token storage.** The JWT is kept in `localStorage`, which a cross-site scripting flaw could read.
   There is no refresh token and no server-side revocation: a token stays valid until it expires
   (1 hour) or the account is deleted.
+- **Stored data is validated, not migrated.** Every read checks the JSON files against the
+  TypeScript models; a file edited by hand into an unexpected shape makes the affected routes answer
+  `500` until it is fixed or deleted.
+- **Types stop at the API boundary.** The frontend is still JavaScript and does not share the
+  backend types.
 - **No rate limiting** on login or sign-up, no e-mail verification and no password recovery.
 - **No HTTPS or security headers** are configured by the application; a deployment would need them.
 - **No orders or payments.** Checkout is a static screen and the cart is not converted into an order.
@@ -235,4 +261,5 @@ Team, as listed in the original READMEs:
 - Jorge Silva — [@jorge-sillva](https://github.com/jorge-sillva)
 - Emanuel
 
-Monorepo unification, API integration, security fixes and tests by Matheus Freire.
+Monorepo unification, API integration, security fixes, tests and the backend migration to TypeScript
+by Matheus Freire.

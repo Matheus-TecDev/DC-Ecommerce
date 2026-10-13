@@ -1,8 +1,9 @@
-const { test } = require("node:test");
-const assert = require("node:assert/strict");
-const { app, request, login, bearer, CLIENTE, ADMIN } = require("./helpers");
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { ADMIN, CLIENTE, app, bearer, login, request } from "./helpers";
+import type { DadosProduto, Produto } from "../src/types/modelos";
 
-const NOVO_PRODUTO = {
+const NOVO_PRODUTO: DadosProduto = {
   categoria: "Casual",
   titulo: "Tênis de Teste",
   descricao: "Produto criado pelos testes automatizados.",
@@ -36,7 +37,8 @@ test("busca por palavra-chave filtra pelo campo informado", async () => {
 
   assert.equal(res.status, 200);
   assert.ok(res.body.length > 0);
-  assert.ok(res.body.every((p) => p.categoria === "Corrida"));
+  const encontrados: Produto[] = res.body;
+  assert.ok(encontrados.every((p) => p.categoria === "Corrida"));
 });
 
 test("busca recusa campos fora da lista permitida", async () => {
@@ -122,6 +124,12 @@ test("erros da API saem em JSON: rota inexistente e corpo malformado", async () 
     .send('{"email": ');
   assert.equal(corpo.status, 400);
   assert.equal(corpo.body.erro, "JSON inválido");
+
+  const grande = await request(app)
+    .post("/userauth/login")
+    .send({ email: "x".repeat(200000) });
+  assert.equal(grande.status, 413);
+  assert.equal(typeof grande.body.erro, "string");
 });
 
 test("CORS libera apenas as origens configuradas", async () => {

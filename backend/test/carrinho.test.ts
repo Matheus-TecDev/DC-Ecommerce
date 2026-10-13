@@ -1,6 +1,8 @@
-const { test } = require("node:test");
-const assert = require("node:assert/strict");
-const { app, request, login, bearer, CLIENTE, ADMIN } = require("./helpers");
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { ADMIN, CLIENTE, app, bearer, login, request } from "./helpers";
+import type { CarrinhoDetalhado } from "../src/types/api";
+import type { Produto } from "../src/types/modelos";
 
 test("carrinho exige autenticação em todas as rotas", async () => {
   const respostas = await Promise.all([
@@ -17,7 +19,9 @@ test("carrinho exige autenticação em todas as rotas", async () => {
 
 test("adiciona itens e calcula os valores com os preços do catálogo", async () => {
   const token = await login(CLIENTE);
-  const [p1, p2] = (await request(app).get("/produtos")).body;
+  const produtos: Produto[] = (await request(app).get("/produtos")).body;
+  const [p1, p2] = produtos;
+  assert.ok(p1 && p2);
 
   await request(app).post("/carrinho/itens").set(bearer(token)).send({ produto_id: p1.id, valor: 0.01 });
   await request(app).post("/carrinho/itens").set(bearer(token)).send({ produto_id: p1.id });
@@ -39,10 +43,12 @@ test("altera a quantidade, remove um item e esvazia o carrinho", async () => {
   const token = await login(CLIENTE);
 
   const alterado = await request(app).patch("/carrinho/itens/1").set(bearer(token)).send({ quantidade: 5 });
-  assert.equal(alterado.body.itens.find((i) => i.produto_id === "1").quantidade, 5);
+  const itensAlterados: CarrinhoDetalhado["itens"] = alterado.body.itens;
+  assert.equal(itensAlterados.find((i) => i.produto_id === "1")?.quantidade, 5);
 
   const removido = await request(app).delete("/carrinho/itens/1").set(bearer(token));
-  assert.equal(removido.body.itens.some((i) => i.produto_id === "1"), false);
+  const itensRestantes: CarrinhoDetalhado["itens"] = removido.body.itens;
+  assert.equal(itensRestantes.some((i) => i.produto_id === "1"), false);
 
   const vazio = await request(app).delete("/carrinho").set(bearer(token));
   assert.deepEqual(vazio.body.itens, []);
@@ -51,7 +57,7 @@ test("altera a quantidade, remove um item e esvazia o carrinho", async () => {
 
 test("valida produto e quantidade", async () => {
   const token = await login(CLIENTE);
-  const casos = [
+  const casos: [Record<string, unknown>, number][] = [
     [{ produto_id: "9999" }, 404],
     [{}, 422],
     [{ produto_id: "1", quantidade: 0 }, 422],

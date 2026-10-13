@@ -1,6 +1,6 @@
-const { test } = require("node:test");
-const assert = require("node:assert/strict");
-const { app, request, login, bearer, CLIENTE, ADMIN } = require("./helpers");
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { ADMIN, CLIENTE, app, bearer, login, request } from "./helpers";
 
 const ID_CLIENTE = "11111111-1111-4111-8111-111111111111";
 const ID_ADMIN = "22222222-2222-4222-8222-222222222222";
@@ -24,7 +24,8 @@ test("somente administradores listam os usuários, e nunca com a senha", async (
   const lista = await request(app).get("/users").set(bearer(await login(ADMIN)));
   assert.equal(lista.status, 200);
   assert.ok(lista.body.length >= 2);
-  assert.ok(lista.body.every((u) => u.password === undefined));
+  const usuarios: Record<string, unknown>[] = lista.body;
+  assert.ok(usuarios.every((u) => u.password === undefined));
 });
 
 test("usuário acessa a própria conta, mas não a de outra pessoa", async () => {

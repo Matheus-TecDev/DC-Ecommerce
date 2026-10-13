@@ -1,9 +1,10 @@
-const { test } = require("node:test");
-const assert = require("node:assert/strict");
-const fs = require("fs");
-const path = require("path");
-const jwt = require("jsonwebtoken");
-const { app, request, login, bearer, CLIENTE, dataDir } = require("./helpers");
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { CLIENTE, SEGREDO, app, bearer, dataDir, login, request } from "./helpers";
+import fs from "fs";
+import path from "path";
+import jwt from "jsonwebtoken";
+import { validarColecao } from "../src/lib/colecoes";
 
 const NOVO = { user: "Maria Teste", email: "maria@teste.example", password: "senha-segura-1" };
 
@@ -15,8 +16,9 @@ test("cadastro cria o usuário, não devolve a senha e a armazena com hash bcryp
   assert.equal(res.body.role, "customer");
   assert.equal(res.body.password, undefined);
 
-  const salvos = JSON.parse(fs.readFileSync(path.join(dataDir, "users.json"), "utf-8"));
-  const salvo = salvos.find((u) => u.email === NOVO.email);
+  const conteudo: unknown = JSON.parse(fs.readFileSync(path.join(dataDir, "users.json"), "utf-8"));
+  const salvo = validarColecao("users", conteudo).find((u) => u.email === NOVO.email);
+  assert.ok(salvo);
   assert.match(salvo.password, /^\$2[aby]\$/);
   assert.notEqual(salvo.password, NOVO.password);
 });
@@ -98,12 +100,14 @@ test("rota protegida bloqueia requisição sem token", async () => {
 
 test("rota protegida bloqueia token adulterado, expirado ou de outro segredo", async () => {
   const token = await login(CLIENTE);
-  const sub = jwt.decode(token).sub;
+  const payload = jwt.decode(token);
+  assert.ok(payload !== null && typeof payload === "object");
+  const { sub } = payload;
   const tokens = [
     "nao-e-um-jwt",
     token.slice(0, -3) + "abc",
     jwt.sign({ sub }, "outro-segredo-qualquer-com-mais-de-32-caracteres"),
-    jwt.sign({ sub }, process.env.JWT_SECRET, { expiresIn: -10 }),
+    jwt.sign({ sub }, SEGREDO, { expiresIn: -10 }),
     `${Buffer.from('{"alg":"none","typ":"JWT"}').toString("base64url")}.${Buffer.from(
       JSON.stringify({ sub })
     ).toString("base64url")}.`,
