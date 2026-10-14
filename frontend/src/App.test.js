@@ -45,7 +45,7 @@ function criarApiFalsa() {
     }
     if (rota === 'POST /userauth/login') {
       return (dados.email === CLIENTE.email || dados.email === 'nova@teste.example') && dados.password.length >= 8 && dados.password !== 'senha-errada'
-        ? resposta(200, { auth: true, token: TOKEN })
+        ? resposta(200, { auth: true, token: TOKEN, user: { id: 'id-cliente', user: 'Cliente Demo', email: dados.email, role: 'customer' } })
         : resposta(401, { erro: 'E-mail ou senha inválidos' });
     }
     if (rota === 'POST /userauth/signup') {
