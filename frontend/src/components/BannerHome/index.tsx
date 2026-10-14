@@ -66,17 +66,19 @@ export default function BannerHome() {
                         <img
                             className={styles.imagem}
                             src={banner.imagemP}
-                            alt="imagem produto" />
+                            alt="" />
                         <img
                             className={styles.imgBack}
                             src={banner.backImagem}
-                            alt="imagem background" />
+                            alt="" />
                     </div>
                 </div>
             ))}
             {BANNERS.map((_banner, index) => (
                 <div key={index} className={styles.radioContainer}>
                     <input type={"radio"}
+                        name="banner-home"
+                        aria-label={`Exibir destaque ${index + 1} de ${BANNERS.length}`}
                         checked={showBanner === index}
                         onChange={() => { setShowBanner(index) }}
                         style={showBanner === index ? { accentColor: "#C92071" } : { accentColor: "#CCCCCC" }} />

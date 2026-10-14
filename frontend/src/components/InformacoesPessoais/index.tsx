@@ -1,3 +1,4 @@
+import { useId } from "react"
 import styles from "./styles.module.scss"
 import type { CampoFormulario, DadosPessoais } from "../../types/formularios"
 
@@ -15,14 +16,16 @@ interface InformacoesPessoaisProps {
 }
 
 export default function InformacoesPessoais({ valores, aoAlterar }: InformacoesPessoaisProps) {
+    const id = useId()
     return (
         <div className={styles.infoPessoaisContainer}>
             <h1>Informações Pessoais</h1>
             <hr />
             {CAMPOS.map((campo) => (
                 <div key={campo.chave} className={styles.infoPessoalInput}>
-                    <h2>{campo.titulo}</h2>
+                    <h2 id={`${id}-${campo.chave}`}>{campo.titulo}</h2>
                     <input
+                        aria-labelledby={`${id}-${campo.chave}`}
                         placeholder={campo.placeholder}
                         type={campo.tipo ?? 'text'}
                         value={valores[campo.chave]}

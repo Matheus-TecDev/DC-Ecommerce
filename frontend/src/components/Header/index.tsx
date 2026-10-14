@@ -31,16 +31,16 @@ export default function Header() {
                         </div>
 
                         <div className={styles.inputContainer}>
-                            <input type="text" className={styles.inputBuscaHome} placeholder="Pesquisar produto..." value={search} onChange={(e) => { setSearch(e.target.value) }} />
+                            <input type="text" className={styles.inputBuscaHome} placeholder="Pesquisar produto..." aria-label="Pesquisar produto" value={search} onChange={(e) => { setSearch(e.target.value) }} />
                             <div>
-                                <CiSearch />
+                                <CiSearch aria-hidden="true" />
                             </div>
                         </div>
                         <div className={styles.botoesContainer} style={usuario ? ESTILO_LOGADO : ESTILO_DESLOGADO}>
                             {usuario ? <div className={styles.usuarioLogado} >
-                                <AiOutlineUser className={styles.usuarioIcon} />
+                                <AiOutlineUser className={styles.usuarioIcon} aria-hidden="true" />
                                 <h3 style={{ whiteSpace: "nowrap" }}>Olá , {usuario.nome}</h3>
-                                <h3 onClick={sair} style={{ cursor: "pointer", textDecoration: "underline", marginLeft: "10px" }}>Sair</h3>
+                                <button type="button" className={styles.sair} onClick={sair}>Sair</button>
                             </div> :
                                 <>
                                     <div className={styles.divCadastro}>
@@ -48,11 +48,9 @@ export default function Header() {
                                             Cadastre-se
                                         </Link>
                                     </div>
-                                    <Link to="/login">
-                                        <div className={styles.divBotaoEntrar}>
-                                            <Botao corFundo="#C92071" texto="Entrar" largura="7.87vw" />
-                                        </div>
-                                    </Link>
+                                    <div className={styles.divBotaoEntrar}>
+                                        <Botao para="/login" corFundo="#C92071" texto="Entrar" largura="7.87vw" />
+                                    </div>
                                 </>
                             }
                             <div className={styles.Carrinho} >

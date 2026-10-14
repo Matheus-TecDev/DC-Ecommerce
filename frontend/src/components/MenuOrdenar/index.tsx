@@ -13,8 +13,8 @@ export default function MenuOrdenar({ termo, total }: MenuOrdenarProps) {
                     Resultados para <span>"{termo || 'Todos'}"</span> - <span className={estilo.resultado}>"{total}" Produtos</span>
                 </div>
                 <div className={estilo.containerOrdenar}>
-                    <label className={estilo.tituloOrdenar}>Ordenar por:  </label> 
-                    <select className={estilo.listChoiceObjects} name="Ordenar porL:" id="">
+                    <label className={estilo.tituloOrdenar} htmlFor="ordenar-produtos">Ordenar por:  </label> 
+                    <select className={estilo.listChoiceObjects} name="ordenar" id="ordenar-produtos">
                         <option value="">Mais relevantes</option>
                         <option value="">Mais relevantes</option>
                         <option value="">Mais relevantes</option>

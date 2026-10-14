@@ -2,7 +2,6 @@ import estilo from './styles.module.scss'
 import Botao from '../../components/Botao'
 import img from './assets/confete.png'
 import imgTenis from './assets/White-Sneakers-PNG-Clipart 2.svg'
-import { Link } from 'react-router-dom'
 
 export default function FinalizarCompra() {
     return (
@@ -104,7 +103,7 @@ export default function FinalizarCompra() {
                     </div>
                     <div className={estilo.produtos}>
                         <div className={estilo.imgProduto}>
-                            <img src={imgTenis} />
+                            <img src={imgTenis} alt="" />
                         </div>
                         <div className={estilo.nomeProduto}>
                             Tênis Nike Revolution 6 Next Nature Masculino
@@ -124,16 +123,13 @@ export default function FinalizarCompra() {
                         </div>
                     </div>
                     <div className={estilo.recibo}>
-                        <a href="">Imprimir Recibo</a>
+                        <button type="button" className={estilo.imprimir} onClick={() => { window.print() }}>Imprimir Recibo</button>
                     </div>
                 </div>
             </div>
-            <Link to='/'>
-                <div className={estilo.botao}>
-                    <Botao cor={'#F5F5F5'} corFundo={'#F6AA1C'} largura={'100%'} altura={'50px'} texto={'Voltar para Home'} />
-                </div>
-
-            </Link>
+            <div className={estilo.botao}>
+                <Botao para="/" cor={'#F5F5F5'} corFundo={'#F6AA1C'} largura={'100%'} altura={'50px'} texto={'Voltar para Home'} />
+            </div>
         </div>
 
     )

@@ -12,25 +12,25 @@ export default function ProdutoHome() {
                     <div className={estilo.tituloNome}>
                         Nome Completo *
                     </div>
-                    <input type="text" placeholder='Insira seu nome'/>
+                    <input type="text" aria-label="Nome Completo" placeholder='Insira seu nome'/>
                 </div>
                 <div className={estilo.cpf}>
                     <div className={estilo.tituloCpf}>
                         CPF *
                     </div>
-                    <input type="text" placeholder='Insira seu CPF'/>
+                    <input type="text" aria-label="CPF" placeholder='Insira seu CPF'/>
                 </div>
                 <div className={estilo.email}>
                     <div className={estilo.tituloEmail}>
                         E-mail *
                     </div>
-                    <input type="text" placeholder='Insira seu email'/>
+                    <input type="text" aria-label="E-mail" placeholder='Insira seu email'/>
                 </div>
                 <div className={estilo.celular}>
                     <div className={estilo.tituloCelular}>
                         Celular *
                     </div>
-                    <input type="text" placeholder='Insira seu celular'/>
+                    <input type="text" aria-label="Celular" placeholder='Insira seu celular'/>
                 </div>
             </div>
         </div>

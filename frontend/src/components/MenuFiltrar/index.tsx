@@ -1,59 +1,37 @@
+import { useId } from 'react'
 import estilo from './styles.module.scss'
 
-export default function Produtos() {
+interface GrupoFiltro {
+    titulo: string;
+    opcoes: readonly string[];
+}
+
+const GRUPOS: readonly GrupoFiltro[] = [
+    { titulo: 'Marka', opcoes: ['Adiddas', 'Calenciaga', 'K-Swiss', 'Nike', 'Pulma'] },
+    { titulo: 'Categoria', opcoes: ['Esporte e lazer', 'Casual', 'Utilitário', 'Corrida'] },
+    { titulo: 'Genero', opcoes: ['Masculino', 'Feminino', 'Unisex'] },
+    { titulo: 'Estado', opcoes: ['Novo', 'Usado'] },
+]
+
+export default function MenuFiltrar() {
+    const id = useId()
 
     return (
         <div className={estilo.container}>
             <div className={estilo.colunaCheckbox}>
                 <h5 className={estilo.titulo}>Filtrar Por</h5>
                 <hr></hr>
-                <h5 className={estilo.subtitulos}>Marka</h5>
-                <div>
-                    <input type="checkbox" />
-                    <label htmlFor="">Adiddas</label> 
-                </div>
-                <div>
-                    <input type="checkbox" />Calenciaga
-                </div>
-                <div>
-                    <input type="checkbox" />K-Swiss
-                </div>
-                <div>
-                    <input type="checkbox" />Nike
-                </div>
-                <div>
-                    <input type="checkbox" />Pulma
-                </div>
-                <h5 className={estilo.subtitulos}>Categoria</h5>
-                <div>
-                    <input type="checkbox" />Esporte e lazer
-                </div>
-                <div>
-                    <input type="checkbox" />Casual
-                </div>
-                <div>
-                    <input type="checkbox" />Utilitário
-                </div>
-                <div>
-                    <input type="checkbox" />Corrida
-                </div>
-                <h5 className={estilo.subtitulos}>Genero</h5>
-                <div>
-                    <input type="checkbox" />Masculino
-                </div>
-                <div>
-                    <input type="checkbox" />Feminino
-                </div>
-                <div>
-                    <input type="checkbox" />Unisex
-                </div>
-                <h5 className={estilo.subtitulos}>Estado</h5>
-                <div >
-                    <input type="checkbox" style={{ border: "1px solid black" }} />Novo
-                </div>
-                <div>
-                    <input type="checkbox" />Usado
-                </div>
+                {GRUPOS.map((grupo) => (
+                    <div key={grupo.titulo} role="group" aria-label={grupo.titulo} className={estilo.grupo}>
+                        <h5 className={estilo.subtitulos}>{grupo.titulo}</h5>
+                        {grupo.opcoes.map((opcao) => (
+                            <div key={opcao}>
+                                <input type="checkbox" id={`${id}-${grupo.titulo}-${opcao}`} />
+                                <label htmlFor={`${id}-${grupo.titulo}-${opcao}`}>{opcao}</label>
+                            </div>
+                        ))}
+                    </div>
+                ))}
             </div>
         </div>
     )

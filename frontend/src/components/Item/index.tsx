@@ -5,7 +5,7 @@ export default function Item(){
     return (
         <div className={estilo.list2group2}>
                     <div className={estilo.itemsellgroup1}>
-                        <div className={estilo.itemimglist}><img src={tenis} className={estilo.itemimg} /></div>
+                        <div className={estilo.itemimglist}><img src={tenis} alt="" className={estilo.itemimg} /></div>
                         <div>
                             <p className={estilo.itemsubtitle}>Pedido nº 2234981932</p>
                             <p className={estilo.itemtitle}>Tênis Nike Revolution 6 Next Nature Masculino</p>

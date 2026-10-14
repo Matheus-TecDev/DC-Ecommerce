@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import styles from './styles.module.scss'
 import type { CampoFormulario, DadosEntrega } from '../../types/formularios'
 
@@ -15,14 +16,16 @@ interface InformacoesEntregaProps {
 }
 
 export default function InformacoesEntrega({ valores, aoAlterar }: InformacoesEntregaProps) {
+    const id = useId()
     return (
         <div className={styles.infoEntregaContainer}>
             <h1>Informações de Entrega</h1>
             <hr />
             {CAMPOS.map((campo) => (
                 <div key={campo.chave} className={styles.infoEntregaInput}>
-                    <h2>{campo.titulo}</h2>
+                    <h2 id={`${id}-${campo.chave}`}>{campo.titulo}</h2>
                     <input
+                        aria-labelledby={`${id}-${campo.chave}`}
                         placeholder={campo.placeholder}
                         value={valores[campo.chave]}
                         onChange={(e) => { aoAlterar(campo.chave, e.target.value) }}

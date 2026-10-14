@@ -211,7 +211,8 @@
                 }
 
                 .botao {
-                    display: none;
+                    height: 0;
+                    visibility: hidden;
                 }
             }
         }

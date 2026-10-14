@@ -244,11 +244,16 @@
                 justify-content: center;
             }
 
-            a {
+            .imprimir {
+                padding: 0;
+                border: none;
+                background: none;
                 font-weight: 400;
                 font-size: 16px;
                 line-height: 28px;
                 color: #474747;
+                text-decoration: underline;
+                cursor: pointer;
             }
         }
     }

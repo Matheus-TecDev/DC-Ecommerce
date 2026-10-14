@@ -1,6 +1,5 @@
 import estilo from './styles.module.scss'
 import Botao from '../Botao'
-import { Link } from 'react-router-dom'
 import { useCarrinho } from '../../contexts/CartContext'
 import { formatarPreco } from '../../utils/precos'
 export default function ResumoDoPedido() {
@@ -31,11 +30,9 @@ export default function ResumoDoPedido() {
                         <div>{total}</div>
                     </div>
                     <div className={estilo.parcelamento}> {parcelamento}</div>
-                    <Link to={'/finalizarcompra'}>
-                        <div className={estilo.botao}>
-                            <Botao cor={'#F5F5F5'} corFundo={'#F6AA1C'} largura={'274px'} altura={'40px'} texto={'Continuar'} />
-                        </div>
-                    </Link>
+                    <div className={estilo.botao}>
+                        <Botao para="/finalizarcompra" cor={'#F5F5F5'} corFundo={'#F6AA1C'} largura={'274px'} altura={'40px'} texto={'Continuar'} />
+                    </div>
                 </div>
             </div>
             <div className={estilo.containerTotal}>
@@ -48,11 +45,9 @@ export default function ResumoDoPedido() {
                     <div className={estilo.parcelamento}> {parcelamento}</div>
 
 
-                    <Link to={'/finalizarcompra'}>
-                        <div className={estilo.botao}>
-                            <Botao cor={'#F5F5F5'} corFundo={'#F6AA1C'} largura={'calc(100%)'} altura={'40px'} texto={'Continuar'} />
-                        </div>
-                    </Link>
+                    <div className={estilo.botao}>
+                        <Botao para="/finalizarcompra" cor={'#F5F5F5'} corFundo={'#F6AA1C'} largura={'calc(100%)'} altura={'40px'} texto={'Continuar'} />
+                    </div>
 
 
                 </div>

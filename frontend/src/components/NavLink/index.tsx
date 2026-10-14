@@ -9,7 +9,7 @@ export default function NavLink() {
         <ul className={styles.navLinkContainer}>
             {route.map((item) => (
                 <li key={item.route} className={styles.navLink}>
-                    <Link to={item.route} className={location.pathname === item.route ? styles.rotaAtivada : undefined}>{item.title}</Link>
+                    <Link to={item.route} className={location.pathname === item.route ? styles.rotaAtivada : undefined} aria-current={location.pathname === item.route ? 'page' : undefined}>{item.title}</Link>
                 </li>
             ))}
         </ul>

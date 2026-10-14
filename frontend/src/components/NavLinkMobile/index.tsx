@@ -13,7 +13,7 @@ export default function NavLinkMobile() {
             <h2 className={styles.tituloLinks}>Páginas</h2>
             {route.map((item) => (
                 <li key={item.route} className={styles.navLink}>
-                    <Link to={item.route} className={location.pathname === item.route ? styles.rotaAtivada : undefined}>{item.title}</Link>
+                    <Link to={item.route} className={location.pathname === item.route ? styles.rotaAtivada : undefined} aria-current={location.pathname === item.route ? 'page' : undefined}>{item.title}</Link>
                 </li>
             ))}
 
@@ -21,13 +21,13 @@ export default function NavLinkMobile() {
                 <hr />
                 {usuario ? <>
                     <span className={styles.linkCadastro}>Olá , {usuario.nome}</span>
-                    <div onClick={sair}>
-                        <Botao texto={"Sair"} largura={"calc(100% - 60px)"} corFundo={"#C92071"} />
+                    <div>
+                        <Botao texto={"Sair"} largura={"calc(100% - 60px)"} corFundo={"#C92071"} onClick={sair} />
                     </div>
                 </> : <>
-                    <Link to={'/login'}>
-                        <Botao texto={"Entrar"} largura={"calc(100% - 60px)"} corFundo={"#C92071"} />
-                    </Link>
+                    <div>
+                        <Botao para="/login" texto={"Entrar"} largura={"calc(100% - 60px)"} corFundo={"#C92071"} />
+                    </div>
 
                     <Link to={'/cadastro'} className={styles.linkCadastro}>Cadastre-se</Link>
                 </>}

@@ -16,8 +16,10 @@ export default function HeaderMobile() {
         return (<div className={styles.headerMobileContainer}>
 
                 <IconContext.Provider value={{ color: "rgb (102,102,102)", className: styles.hamburguer }}>
-                        <FaBars className={styles.posicaoIconHamburguer} 
-                        onClick={()=>{setHamburguer(!hamburguer);setPopUpInput(false)}}/>
+                        <button type="button" className={styles.botaoIcone} aria-label="Menu de navegação" aria-expanded={hamburguer}
+                        onClick={()=>{setHamburguer(!hamburguer);setPopUpInput(false)}}>
+                                <FaBars className={styles.posicaoIconHamburguer} aria-hidden="true" />
+                        </button>
                 </IconContext.Provider>
 
 
@@ -28,8 +30,10 @@ export default function HeaderMobile() {
                         <div className={styles.tituloLogo} >
                                 <span>Digital Store</span>
                                 <IconContext.Provider value={{ color: '#C92071', className: styles.icon }}>
-                                        <CiSearch className={styles.posicaoIconSearch}
-                                         onClick={()=>{setPopUpInput(!popUpInput);setHamburguer(false)}}/>
+                                        <button type="button" className={styles.botaoIcone} aria-label="Pesquisar produto" aria-expanded={popUpInput}
+                                         onClick={()=>{setPopUpInput(!popUpInput);setHamburguer(false)}}>
+                                                <CiSearch className={styles.posicaoIconSearch} aria-hidden="true" />
+                                        </button>
                                 </IconContext.Provider>
 
                         </div>
@@ -47,9 +51,9 @@ export default function HeaderMobile() {
 
                 </div>
                {popUpInput&&<div className={styles.containerPesquisaHeaderMobile}>
-                    <input type={"text"} placeholder="Pesquisar produto..." className={styles.inputPesquisaHeader} value={search.search} onChange={(e)=>{search.setSearch(e.target.value)}}/>
+                    <input type={"text"} placeholder="Pesquisar produto..." aria-label="Pesquisar produto" className={styles.inputPesquisaHeader} value={search.search} onChange={(e)=>{search.setSearch(e.target.value)}}/>
                     <IconContext.Provider value={{  color:'rgb(102, 102, 102)', className: styles.containerIconPesquisaPop }}>
-                                        <CiSearch className={styles.iconPesquisaPop} />
+                                        <CiSearch className={styles.iconPesquisaPop} aria-hidden="true" />
                                 </IconContext.Provider>
                 </div>}
         </div>

@@ -1,6 +1,6 @@
 import estilo from './styles.module.scss'
 import Botao from '../../components/Botao'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useCarrinho } from '../../contexts/CartContext'
 import { mensagemDeErro, urlImagem } from '../../services/api'
@@ -12,6 +12,7 @@ const estiloImagem: CSSProperties = { objectFit: "contain" }
 export default function MeusPedidos() {
     const { carrinho, alterarQuantidade, remover } = useCarrinho()
     const [erro, setErro] = useState('')
+    const id = useId()
 
     function executar(acao: Promise<void>) {
         setErro('')
@@ -22,11 +23,11 @@ export default function MeusPedidos() {
         return (
             <div className={estilo.quantidade}>
                 <div className={estilo.botoes}>
-                    <button disabled={item.quantidade <= 1} onClick={() => executar(alterarQuantidade(item.produto_id, item.quantidade - 1))}> - </button>
+                    <button type="button" aria-label={`Diminuir quantidade de ${item.titulo}`} disabled={item.quantidade <= 1} onClick={() => executar(alterarQuantidade(item.produto_id, item.quantidade - 1))}> - </button>
                     <p>{item.quantidade}</p>
-                    <button onClick={() => executar(alterarQuantidade(item.produto_id, item.quantidade + 1))}> + </button>
+                    <button type="button" aria-label={`Aumentar quantidade de ${item.titulo}`} onClick={() => executar(alterarQuantidade(item.produto_id, item.quantidade + 1))}> + </button>
                 </div>
-                <p className={estilo.removerItem} onClick={() => executar(remover(item.produto_id))}>Remover item</p>
+                <button type="button" className={estilo.removerItem} aria-label={`Remover ${item.titulo} do carrinho`} onClick={() => executar(remover(item.produto_id))}>Remover item</button>
             </div>
         )
     }
@@ -107,15 +108,15 @@ export default function MeusPedidos() {
                 <hr />
                 <div className={estilo.informacoesAdicionais}>
                     <div className={estilo.desconto}>
-                        <label>Cupom de desconto</label>
+                        <label htmlFor={`${id}-cupom`}>Cupom de desconto</label>
                         <div>
-                            <input type="text" placeholder="Insira seu codigo" /> <Botao cor={'#C92071'} corFundo={'#F5F5F5'} largura={'114px'} altura={'60px'} texto={'OK'} />
+                            <input type="text" id={`${id}-cupom`} placeholder="Insira seu codigo" /> <Botao cor={'#C92071'} corFundo={'#F5F5F5'} largura={'114px'} altura={'60px'} texto={'OK'} />
                         </div>
                     </div>
                     <div className={estilo.frete}>
-                        <label>Calcular frete</label>
+                        <label htmlFor={`${id}-frete`}>Calcular frete</label>
                         <div>
-                            <input type="text" placeholder="Insira seu CEP" /> <Botao cor={'#C92071'} corFundo={'#F5F5F5'} largura={'114px'} altura={'60px'} texto={'OK'} />
+                            <input type="text" id={`${id}-frete`} placeholder="Insira seu CEP" /> <Botao cor={'#C92071'} corFundo={'#F5F5F5'} largura={'114px'} altura={'60px'} texto={'OK'} />
                         </div>
                     </div>
                 </div>
@@ -158,17 +159,17 @@ export default function MeusPedidos() {
             </div>
                 <div className={estilo.containerDescontoMobile}>
                     <div className={estilo.descontoMobile}>
-                        <label>Cupom de desconto</label>
+                        <label htmlFor={`${id}-cupom-mobile`}>Cupom de desconto</label>
                         <div>
-                            <input type="text" placeholder="Insira seu codigo" /> <Botao cor={'#C92071'} corFundo={'#F5F5F5'} largura={'255px'} altura={'60px'} texto={'OK'} />
+                            <input type="text" id={`${id}-cupom-mobile`} placeholder="Insira seu codigo" /> <Botao cor={'#C92071'} corFundo={'#F5F5F5'} largura={'255px'} altura={'60px'} texto={'OK'} />
                         </div>
                     </div>
                 </div>
                 <div className={estilo.containerFreteMobile}>
                     <div className={estilo.freteMobile}>
-                        <label>Calcular frete</label>
+                        <label htmlFor={`${id}-frete-mobile`}>Calcular frete</label>
                         <div>
-                            <input type="text" placeholder="Insira seu CEP" /> 
+                            <input type="text" id={`${id}-frete-mobile`} placeholder="Insira seu CEP" /> 
                             <Botao cor={'#C92071'} corFundo={'#F5F5F5'} largura={'255px'} altura={'60px'} texto={'OK'} />
                         </div>
                     </div>

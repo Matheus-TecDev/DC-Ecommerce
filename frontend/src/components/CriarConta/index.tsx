@@ -25,11 +25,11 @@ export default function CriarConta() {
 
     async function handleCadastro() {
         if (algumCampoVazio(contaInfo) || algumCampoVazio(contaEntrega)) {
-            alert('Todos os campos devem ser preenchidos')
+            setErro('Todos os campos devem ser preenchidos')
             return
         }
         if (!concorda) {
-            alert("Para continuar, aceite os nossos termos")
+            setErro('Para continuar, aceite os nossos termos')
             return
         }
         if (enviando) return
@@ -63,8 +63,8 @@ export default function CriarConta() {
                 </label>
             </div>
             {erro && <p role="alert" style={{ color: '#EE4266', fontSize: '14px', marginBottom: '10px' }}>{erro}</p>}
-            <div className={styles.Botao} onClick={() => { handleCadastro() }}>
-                <Botao texto={enviando ? "Criando conta..." : "Criar Conta"} largura={"100%"} corFundo={"#C92071"} altura={"48px"} />
+            <div className={styles.Botao}>
+                <Botao texto={enviando ? "Criando conta..." : "Criar Conta"} largura={"100%"} corFundo={"#C92071"} altura={"48px"} onClick={() => { handleCadastro() }} />
             </div>
         </div>
     )

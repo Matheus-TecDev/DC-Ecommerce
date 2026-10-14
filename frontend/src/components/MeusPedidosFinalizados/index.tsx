@@ -3,7 +3,7 @@ import Item from "../../components/Item"
 import MinhasInformacoes from "../MinhasInformacoes"
 import {useState} from 'react'
 export default function MeusPedidosFinalizados() {
-    const[opcaoSelecionada,setOpcaoSelecionada]= useState('pedidos')
+    const[opcaoSelecionada,setOpcaoSelecionada]= useState<'pedidos' | 'informacoes'>('pedidos')
     return (
         <div className={estilo.meusPedidosFinalizadosContainer}>
             <div className={estilo.containermaster}>
@@ -12,11 +12,11 @@ export default function MeusPedidosFinalizados() {
 
                     <div className={estilo.listgroup1}><p className={estilo.textgroup1}>Meu Perfil</p></div>
                     <hr />
-                    <div className={estilo.listgroup1}><p className={estilo.textgroup1} onClick={()=>{setOpcaoSelecionada('pedidos')}} 
-                    style={opcaoSelecionada&&opcaoSelecionada==='pedidos'?{color:'#C92071'}:{}}>Meu Pedidos</p></div>
+                    <div className={estilo.listgroup1}><p className={estilo.textgroup1}
+                    style={opcaoSelecionada==='pedidos'?{color:'#C92071'}:{}}><button type="button" className={estilo.opcao} aria-pressed={opcaoSelecionada==='pedidos'} onClick={()=>{setOpcaoSelecionada('pedidos')}}>Meu Pedidos</button></p></div>
                     <hr />
-                    <div className={estilo.listgroup1}><p className={estilo.textgroup1} onClick={()=>{setOpcaoSelecionada('informacoes')}} 
-                     style={opcaoSelecionada&&opcaoSelecionada==='informacoes'?{color:'#C92071'}:{}}>Minhas Informações</p></div>
+                    <div className={estilo.listgroup1}><p className={estilo.textgroup1}
+                     style={opcaoSelecionada==='informacoes'?{color:'#C92071'}:{}}><button type="button" className={estilo.opcao} aria-pressed={opcaoSelecionada==='informacoes'} onClick={()=>{setOpcaoSelecionada('informacoes')}}>Minhas Informações</button></p></div>
                     <hr />
                     <div className={estilo.listgroup1}><p className={estilo.textgroup1}>Métodos de Pagamentos</p></div>
 

@@ -11,26 +11,21 @@ const Banner = () => {
   const [widthButton, setWidthButton] = useState('200px')
 
   useEffect(() => {
-    checkSize()
-  })
-
-
-  window.addEventListener("resize", () => {
-    checkSize()
-  })
-
-  const checkSize= () => {
-    if (window.innerWidth < 500) {
-      setWidthButton('80vw');
-    } else {
-      setWidthButton('200px');
+    const checkSize = () => {
+      setWidthButton(window.innerWidth < 500 ? '80vw' : '200px');
     }
-  }
+    checkSize()
+    window.addEventListener("resize", checkSize)
+    return () => {
+      window.removeEventListener("resize", checkSize)
+    }
+  }, [])
 
 
 
   const MyDot = ({ isActive }: { isActive: boolean }) => (
     <span
+      aria-hidden="true"
       style={{
         display: 'inline-block',
         height: '12px',
@@ -52,7 +47,7 @@ const Banner = () => {
         showDots={true}
         dot={MyDot}
         loop={true}
-        containerStyle={{ height: "681px",width:"100vw", boxSiging:"none"}}
+        containerStyle={{ height: "681px", width: "100vw" }}
         hideArrow={true}
 
       >
@@ -65,10 +60,10 @@ const Banner = () => {
               <Botao texto={"Ver Ofertas"} corFundo={'#C92071'} largura={widthButton}  />
             </div>
             <div className={styles.divImageCarouselItem}>
-              <img src={tenis} className={styles.tenis} />
+              <img src={tenis} alt="" className={styles.tenis} />
             </div>
             <div className={styles.divOrnamentCarousel}>
-              <img src={ornament} />
+              <img src={ornament} alt="" />
             </div>
           </div>
         </Carousel.Item>
@@ -81,10 +76,10 @@ const Banner = () => {
               <Botao texto={"Ver Ofertas"} corFundo={'#C92071'} largura={widthButton}  />
             </div>
             <div className={styles.divImageCarouselItem}>
-              <img src={tenis} className={styles.tenis} />
+              <img src={tenis} alt="" className={styles.tenis} />
             </div>
             <div className={styles.divOrnamentCarousel}>
-              <img src={ornament} />
+              <img src={ornament} alt="" />
             </div>
           </div>
         </Carousel.Item>
@@ -97,10 +92,10 @@ const Banner = () => {
               <Botao texto={"Ver Ofertas"} corFundo={'#C92071'} largura={widthButton}  />
             </div>
             <div className={styles.divImageCarouselItem}>
-              <img src={tenis} className={styles.tenis} />
+              <img src={tenis} alt="" className={styles.tenis} />
             </div>
             <div className={styles.divOrnamentCarousel}>
-              <img src={ornament} />
+              <img src={ornament} alt="" />
             </div>
           </div>
         </Carousel.Item>

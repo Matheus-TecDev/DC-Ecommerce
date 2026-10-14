@@ -12,31 +12,31 @@ export default function ProdutoHome() {
                     <div className={estilo.tituloEndereco}>
                         Endereço *
                     </div>
-                    <input type="text" placeholder='Insira seu endereco' />
+                    <input type="text" aria-label="Endereço" placeholder='Insira seu endereco' />
                 </div>
                 <div className={estilo.bairro}>
                     <div className={estilo.tituloBairro}>
                         Bairro *
                     </div>
-                    <input type="text" placeholder='Insira seu bairro' />
+                    <input type="text" aria-label="Bairro" placeholder='Insira seu bairro' />
                 </div>
                 <div className={estilo.cidade}>
                     <div className={estilo.tituloCidade}>
                         Cidade *
                     </div>
-                    <input type="text" placeholder='Insira sua cidade' />
+                    <input type="text" aria-label="Cidade" placeholder='Insira sua cidade' />
                 </div>
                 <div className={estilo.cep}>
                     <div className={estilo.tituloCep}>
                         CEP *
                     </div>
-                    <input type="text" placeholder='Insira seu CEP' />
+                    <input type="text" aria-label="CEP" placeholder='Insira seu CEP' />
                 </div>
                 <div className={estilo.complemento}>
                     <div className={estilo.tituloComplemento}>
                         Complemento
                     </div>
-                    <input type="text" placeholder='Insira complemento' />
+                    <input type="text" aria-label="Complemento" placeholder='Insira complemento' />
                 </div>
             </div>
         </div>
