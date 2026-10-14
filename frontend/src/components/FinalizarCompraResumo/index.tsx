@@ -57,7 +57,7 @@ export default function FinalizarCompraResumo() {
             </div>
             <div>
                 <div className={estilo.botao}>
-                    <Botao para="/comprafinalizada" cor={'white'} corFundo={'#F6AA1C'} largura={'100%'} altura={'50px'} texto={'Realizar Pagamento'} />
+                    <Botao para="/comprafinalizada" cor={'white'} corFundo={'#F6AA1C'} largura={'100%'} altura={'50px'} texto={'Concluir demonstração'} />
                 </div>
             </div>
         </div>)

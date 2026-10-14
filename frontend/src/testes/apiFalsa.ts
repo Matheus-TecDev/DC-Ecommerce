@@ -41,6 +41,7 @@ export interface OpcoesApiFalsa {
 
 export interface ApiFalsa {
   chamadas: (rota: string) => Chamada[];
+  totalDeChamadas: () => number;
   invalidarToken: () => void;
   ociosa: () => Promise<void>;
 }
@@ -188,6 +189,7 @@ export function criarApiFalsa({ carrinho = [], respostas = {} }: OpcoesApiFalsa 
 
   return {
     chamadas: (rota) => registradas.filter((chamada) => chamada.rota === rota),
+    totalDeChamadas: () => registradas.length,
     invalidarToken: () => {
       tokenValido = false;
     },

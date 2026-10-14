@@ -1,5 +1,6 @@
 import estilo from './styles.module.scss'
 import Botao from '../../components/Botao'
+import AvisoDemonstrativo from '../AvisoDemonstrativo'
 import img from './assets/confete.png'
 import imgTenis from './assets/White-Sneakers-PNG-Clipart 2.svg'
 
@@ -13,8 +14,14 @@ export default function FinalizarCompra() {
                         <img src={img} alt="" />
                     </div>
                     <div className={estilo.texto}>
-                        Compra Realizada com sucesso!
+                        Demonstração de compra concluída!
                     </div>
+                </div>
+                <div className={estilo.aviso}>
+                    <AvisoDemonstrativo
+                        titulo="Nenhum pagamento foi processado."
+                        texto="Nenhum pedido foi criado e nada foi cobrado. Os dados exibidos abaixo são fictícios e servem apenas para ilustrar o layout."
+                    />
                 </div>
                 <hr />
                 <div className={estilo.informacoesPessoais}>
@@ -84,15 +91,9 @@ export default function FinalizarCompra() {
                         Informações de Pagamento
                     </div>
                     <div className={estilo.tituarCrt}>
-                        <label>Titular do Cartão:</label>
+                        <label>Forma de pagamento:</label>
                         <p>
-                            FRANCISCO A P
-                        </p>
-                    </div>
-                    <div className={estilo.finalCrt}>
-                        <label>Final:</label>
-                        <p>
-                            ************2020
+                            Demonstrativa, sem cobrança
                         </p>
                     </div>
                 </div>
@@ -121,9 +122,6 @@ export default function FinalizarCompra() {
                         <div className={estilo.parcelamento}>
                             ou 10x de R$ 21,00 sem juros
                         </div>
-                    </div>
-                    <div className={estilo.recibo}>
-                        <button type="button" className={estilo.imprimir} onClick={() => { window.print() }}>Imprimir Recibo</button>
                     </div>
                 </div>
             </div>

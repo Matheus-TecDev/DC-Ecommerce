@@ -10,38 +10,6 @@
     margin-bottom: 10px;
     
 
-    .checkContainer {
-
-        margin-top:30px;
-        margin-bottom: 40px;
-        label {
-            width: math.div(748px, 1440px)*100vw;
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-            justify-content: center;
-            flex-wrap: wrap;
-            height: 44px;
-
-            span {
-                width: math.div(710px, 1440px)*100vw;
-                font-size: 14px;
-                color:#474747;
-
-            }
-
-           .check {
-                height: 22px;
-                width: 22px;
-                margin-right: 10px;
-            }
-            .check[type='checkbox']:checked{
-               accent-color: #C92071;
-               size: 2px;
-            }
-        }
-    }
-    
     .tituloContainer {
         height: 36px;
         font-size: 32px;
@@ -51,6 +19,7 @@
         margin-bottom: 22px;
     }
     .Botao{
+        margin-top: 40px;
         margin-bottom:153px;
         width: math.div(750px, 1440px) * 100vw;
     }
@@ -62,33 +31,5 @@
         margin-bottom:153px;
         width: math.div(315px, 375px) * 100vw;
     }
-    .checkContainer {
-
-       
-        label {
-            width: math.div(325px, 375px)*100vw;
-           
-            height: 88px;
-
-            span {
-                width: math.div(275px, 375px)*100vw;
-                font-size: 14px;
-                color:#474747;
-            }
-
-           .check {
-                height: 22px;
-                width: 22px;
-                margin-right: 10px;
-            }
-            .check[type='checkbox']:checked{
-               accent-color: #C92071;
-               size: 2px;
-            }
-        }
     }
-        
-        
-    
-}
 }

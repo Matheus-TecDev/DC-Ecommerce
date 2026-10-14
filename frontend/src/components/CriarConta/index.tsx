@@ -16,7 +16,6 @@ export default function CriarConta() {
     const { email: emailInicial = '' } = useParams()
     const [contaInfo, setContaInfo] = useState<DadosPessoais>({ nome: "", cpf: "", email: emailInicial, celular: "", senha: "" })
     const [contaEntrega, setContaEntrega] = useState<DadosEntrega>({ endereco: "", bairro: "", cidade: "", cep: "", complemento: "" })
-    const [concorda, setConcorda] = useState(false);
     const [erro, setErro] = useState('');
     const [enviando, setEnviando] = useState(false);
 
@@ -26,10 +25,6 @@ export default function CriarConta() {
     async function handleCadastro() {
         if (algumCampoVazio(contaInfo) || algumCampoVazio(contaEntrega)) {
             setErro('Todos os campos devem ser preenchidos')
-            return
-        }
-        if (!concorda) {
-            setErro('Para continuar, aceite os nossos termos')
             return
         }
         if (enviando) return
@@ -56,13 +51,7 @@ export default function CriarConta() {
                 valores={contaEntrega}
                 aoAlterar={(campo, valor) => setContaEntrega((atual) => ({ ...atual, [campo]: valor }))}
             />
-            <div className={styles.checkContainer}>
-                <label>
-                    <input type="checkbox" className={styles.check} checked={concorda} onChange={(e) => { setConcorda(e.target.checked) }} />
-                    <span>Quero receber por email ofertas e novidades das lojas da Digital Store. A frequência de envios pode variar de acordo com a intenção do cliente.</span>
-                </label>
-            </div>
-            {erro && <p role="alert" style={{ color: '#EE4266', fontSize: '14px', marginBottom: '10px' }}>{erro}</p>}
+            {erro && <p role="alert" style={{ color: '#EE4266', fontSize: '14px', marginTop: '30px', marginBottom: '0' }}>{erro}</p>}
             <div className={styles.Botao}>
                 <Botao texto={enviando ? "Criando conta..." : "Criar Conta"} largura={"100%"} corFundo={"#C92071"} altura={"48px"} onClick={() => { handleCadastro() }} />
             </div>

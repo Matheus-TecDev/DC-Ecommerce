@@ -28,7 +28,7 @@ export default function FinalizarCompra() {
                     cor={'white'}
                     corFundo={'#F6AA1C'}
                     largura={'100%'} altura={'50px'}
-                    texto={'Realizar Pagamento'} />
+                    texto={'Concluir demonstração'} />
             </div>
         </div>
 

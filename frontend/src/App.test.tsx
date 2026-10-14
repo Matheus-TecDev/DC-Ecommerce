@@ -323,7 +323,6 @@ describe('autenticação', () => {
 
       expect(screen.getByLabelText('E-mail *')).toHaveValue('nova@teste.example');
       preencherCadastro();
-      userEvent.click(screen.getByRole('checkbox'));
       userEvent.click(screen.getByRole('button', { name: 'Criar Conta' }));
 
       await waitFor(() => expect(window.localStorage.getItem(CHAVE_TOKEN)).toBe(TOKEN));
@@ -340,24 +339,34 @@ describe('autenticação', () => {
       await screen.findAllByText('Tênis Urban Flow');
     });
 
-    test('exige todos os campos e o aceite antes de chamar a API', () => {
+    test('exige todos os campos antes de chamar a API', () => {
       abrir('/cadastro/nova@teste.example');
 
       userEvent.click(screen.getByRole('button', { name: 'Criar Conta' }));
+
       expect(screen.getByRole('alert')).toHaveTextContent('Todos os campos devem ser preenchidos');
+      expect(apiFalsa.chamadas('POST /userauth/signup')).toHaveLength(0);
+    });
+
+    test('não pede consentimento de marketing nem aceite de termos para cadastrar', async () => {
+      abrir('/cadastro/nova@teste.example');
+
+      expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+      expect(screen.queryByText(/ofertas e novidades/i)).not.toBeInTheDocument();
 
       preencherCadastro();
       userEvent.click(screen.getByRole('button', { name: 'Criar Conta' }));
-      expect(screen.getByRole('alert')).toHaveTextContent('Para continuar, aceite os nossos termos');
 
-      expect(apiFalsa.chamadas('POST /userauth/signup')).toHaveLength(0);
+      await waitFor(() => expect(apiFalsa.chamadas('POST /userauth/signup')).toHaveLength(1));
+      expect(screen.queryByText(/aceite os nossos termos/i)).not.toBeInTheDocument();
+      await waitFor(() => expect(window.localStorage.getItem(CHAVE_TOKEN)).toBe(TOKEN));
+      await screen.findAllByText('Tênis Urban Flow');
     });
 
     test('mostra o erro da API quando o e-mail já está cadastrado e permite tentar de novo', async () => {
       abrir(`/cadastro/${CLIENTE.email}`);
 
       preencherCadastro();
-      userEvent.click(screen.getByRole('checkbox'));
       userEvent.click(screen.getByRole('button', { name: 'Criar Conta' }));
 
       expect(await screen.findByRole('alert')).toHaveTextContent('Usuário já existente');
@@ -510,8 +519,53 @@ describe('carrinho', () => {
 
     expect(await screen.findByText('2 x Tênis Sprint Pro')).toBeInTheDocument();
     expect(screen.getAllByText('R$ 594,84').length).toBeGreaterThan(0);
-    for (const link of screen.getAllByRole('link', { name: 'Realizar Pagamento' })) {
+    for (const link of screen.getAllByRole('link', { name: 'Concluir demonstração' })) {
       expect(link).toHaveAttribute('href', '/comprafinalizada');
     }
+  });
+});
+
+describe('checkout demonstrativo', () => {
+  test('avisa que nada é processado e não pede dados de cartão', async () => {
+    abrir('/finalizarcompra');
+    await apiFalsa.ociosa();
+
+    const avisos = screen.getAllByRole('note');
+    expect(avisos[0]).toHaveTextContent('Checkout demonstrativo.');
+    expect(avisos[0]).toHaveTextContent('nenhum pagamento é processado');
+    expect(avisos[1]).toHaveTextContent('não solicita dados de cartão');
+
+    for (const campo of screen.getAllByRole('textbox')) {
+      expect(campo).not.toHaveAccessibleName(/cart[ãa]o|cvv|validade/i);
+    }
+    expect(screen.queryByPlaceholderText(/cart[ãa]o|cvv/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Realizar Pagamento/i)).not.toBeInTheDocument();
+  });
+
+  test('preencher e concluir o checkout não envia nada à API', async () => {
+    abrir('/finalizarcompra');
+    await apiFalsa.ociosa();
+    const chamadasAntes = apiFalsa.totalDeChamadas();
+
+    userEvent.type(screen.getByRole('textbox', { name: 'Nome Completo' }), 'Pessoa de Teste');
+    userEvent.click(screen.getByRole('radio', { name: 'Boleto Bancário' }));
+    userEvent.click(primeiro(screen.getAllByRole('link', { name: 'Concluir demonstração' })));
+
+    expect(await screen.findByText('Demonstração de compra concluída!')).toBeInTheDocument();
+    await apiFalsa.ociosa();
+    expect(apiFalsa.totalDeChamadas()).toBe(chamadasAntes);
+  });
+
+  test('a confirmação declara que nenhum pagamento foi processado e não mostra cartão', async () => {
+    abrir('/comprafinalizada');
+    await apiFalsa.ociosa();
+
+    expect(screen.getByRole('note')).toHaveTextContent('Nenhum pagamento foi processado.');
+    expect(screen.getByRole('note')).toHaveTextContent('dados exibidos abaixo são fictícios');
+    expect(screen.queryByText(/Compra Realizada com sucesso/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Titular do Cartão/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/\*{4,}/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Recibo/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Voltar para Home' })).toHaveAttribute('href', '/');
   });
 });
