@@ -133,7 +133,7 @@ export default function MeusPedidos() {
                     {vazio}
                     {mensagemErro}
                     {carrinho.itens.map((item) => (
-                    <div key={item.produto_id}>
+                    <div key={item.produto_id} className={estilo.itemMobile}>
                     {identificacao(item)}
                     <div className={estilo.subQuantidade}>
                         QUANTIDADE

@@ -569,3 +569,55 @@ describe('checkout demonstrativo', () => {
     expect(screen.getByRole('link', { name: 'Voltar para Home' })).toHaveAttribute('href', '/');
   });
 });
+
+describe('galeria do produto', () => {
+  function selecionada(): string | null {
+    const [ativa] = screen.getAllByRole('button', { name: /^Imagem \d de 5$/, pressed: true });
+    return ativa ? ativa.getAttribute('aria-label') : null;
+  }
+
+  test('as miniaturas são botões nomeados e somente uma fica selecionada', async () => {
+    abrir('/produtos/2');
+    await screen.findByText('Leve e responsivo.');
+
+    expect(screen.getAllByRole('button', { name: /^Imagem \d de 5$/ })).toHaveLength(5);
+    expect(screen.getAllByRole('button', { name: /^Imagem \d de 5$/, pressed: true })).toHaveLength(1);
+    expect(selecionada()).toBe('Imagem 1 de 5');
+
+    userEvent.click(screen.getByRole('button', { name: 'Imagem 4 de 5' }));
+
+    expect(screen.getAllByRole('button', { name: /^Imagem \d de 5$/, pressed: true })).toHaveLength(1);
+    expect(selecionada()).toBe('Imagem 4 de 5');
+  });
+
+  test('as setas percorrem as imagens nos dois sentidos, voltando ao início e ao fim', async () => {
+    abrir('/produtos/2');
+    await screen.findByText('Leve e responsivo.');
+    const proxima = primeiro(screen.getAllByRole('button', { name: 'Próxima imagem' }));
+    const anterior = primeiro(screen.getAllByRole('button', { name: 'Imagem anterior' }));
+
+    userEvent.click(proxima);
+    expect(selecionada()).toBe('Imagem 2 de 5');
+
+    userEvent.click(anterior);
+    userEvent.click(anterior);
+    expect(selecionada()).toBe('Imagem 5 de 5');
+
+    userEvent.click(proxima);
+    expect(selecionada()).toBe('Imagem 1 de 5');
+  });
+
+  test('miniaturas e setas funcionam pelo teclado', async () => {
+    abrir('/produtos/2');
+    await screen.findByText('Leve e responsivo.');
+
+    const terceira = screen.getByRole('button', { name: 'Imagem 3 de 5' });
+    terceira.focus();
+    userEvent.keyboard('{enter}');
+    expect(selecionada()).toBe('Imagem 3 de 5');
+
+    primeiro(screen.getAllByRole('button', { name: 'Próxima imagem' })).focus();
+    userEvent.keyboard('{space}');
+    expect(selecionada()).toBe('Imagem 4 de 5');
+  });
+});

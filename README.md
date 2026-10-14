@@ -31,7 +31,8 @@ in the original code.
 
 **Layout only (static, as designed in the course)**
 
-- Checkout form and "order completed" page — nothing is charged or stored; only the order summary shows real cart values
+- Checkout form and "demonstration completed" page — both are labelled as a demonstration, no card
+  data is requested, nothing is sent, charged or stored; only the order summary shows real cart values
 - "Meus Pedidos" (order history) and "Minhas Informações" pages
 - Filter sidebar and "sort by" selector on the product listing
 - Coupon and shipping fields, size and colour pickers, star ratings
@@ -250,14 +251,19 @@ Changes made to the original code when the two projects were merged:
 - **No rate limiting** on login or sign-up, no e-mail verification and no password recovery.
 - **No HTTPS or security headers** are configured by the application; a deployment would need them.
 - **No orders or payments.** Checkout is a static screen and the cart is not converted into an order.
-- **One image per product.** The gallery on the product page repeats the same image.
-- The sign-up form treats the newsletter checkbox as mandatory, as in the original project.
+- **One image per product.** The gallery on the product page repeats the same image; its arrows and
+  thumbnails only switch the selected thumbnail and the background colour.
+- **No marketing preference or terms of use.** The newsletter checkbox of the original sign-up form
+  was removed, because the API has nowhere to store that choice, and the project has no terms of use
+  or privacy policy document to be accepted.
+- The sign-up form still requires every field it shows, including the ones that are not sent to the
+  API.
 - The frontend uses Create React App, which is no longer maintained; `npm audit` reports
   vulnerabilities in its build-time dependencies, and its tooling prints Node.js deprecation and
   outdated Browserslist notices during tests and builds.
 - **Accessibility was improved, not audited.** Links, buttons, form field names and image
-  alternatives were fixed in the main flows, but the product image thumbnails are still not
-  keyboard-operable, the gallery arrows do nothing, and no screen reader testing was done.
+  alternatives were fixed in the main flows and the product gallery is keyboard-operable, but no
+  screen reader testing was done.
 - Interface texts and API messages are in Portuguese.
 
 ## Credits
