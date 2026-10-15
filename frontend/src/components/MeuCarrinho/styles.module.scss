@@ -159,6 +159,11 @@
                     }
 
                     .removerItem {
+                        margin: 0;
+                        padding: 0;
+                        border: none;
+                        background: none;
+                        cursor: pointer;
                         font-size: 12px;
                         font-weight: 400;
                         color: #474747;
@@ -286,8 +291,8 @@
     .containerGeralMobile {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        height: 907px;
+        gap: 14px;
+        min-height: 907px;
         width: 315px;
         margin-bottom: 10px;
 
@@ -297,13 +302,20 @@
             justify-content: center;
             align-items: center;
             width: 315px;
-            height: 459px;
+            min-height: 459px;
+            padding: 30px 0;
             background-color: #FFFFFF;
             border-radius: 4px;
 
             .carrinhoMobile {
                 width: 255px;
-                height: 399px;
+                min-height: 399px;
+
+                .itemMobile + .itemMobile {
+                    margin-top: 30px;
+                    padding-top: 30px;
+                    border-top: 1px solid #CCCCCC;
+                }
 
                 .titulo {
                     font-weight: 700;
@@ -411,6 +423,10 @@
 
                     .removerItem {
                         display: flex;
+                        padding: 0;
+                        border: none;
+                        background: none;
+                        cursor: pointer;
                         font-size: 12px;
                         font-weight: 400;
                         color: #474747;

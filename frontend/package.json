@@ -19,6 +19,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint --ext .ts,.tsx src --max-warnings 0",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -38,5 +40,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/jest": "^27.5.2",
+    "@types/node": "^18.19.130",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "typescript": "^4.9.5"
   }
 }

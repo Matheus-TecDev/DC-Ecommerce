@@ -108,6 +108,18 @@ $coeficiente:0.26666;
 }
 
 
+.botaoIcone {
+        display: flex;
+        align-items: flex-start;
+        margin: 0;
+        padding: 0;
+        border: none;
+        background: none;
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+}
+
 .icon {
         position: relative;
         color: rgb(102, 102, 102);

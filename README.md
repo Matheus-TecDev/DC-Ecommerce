@@ -2,7 +2,7 @@
 
 An educational e-commerce storefront built as a team project in the Full Stack course at
 Digital College (Fortaleza, Brazil). A React single-page application
-consumes a Node.js/Express REST API, written in TypeScript, with JWT authentication.
+consumes a Node.js/Express REST API with JWT authentication. Both sides are written in TypeScript.
 
 The frontend and the backend were originally developed in two separate repositories. This monorepo
 brings them together, connects the main user flows to the API and fixes the security problems found
@@ -31,7 +31,8 @@ in the original code.
 
 **Layout only (static, as designed in the course)**
 
-- Checkout form and "order completed" page — nothing is charged or stored; only the order summary shows real cart values
+- Checkout form and "demonstration completed" page — both are labelled as a demonstration, no card
+  data is requested, nothing is sent, charged or stored; only the order summary shows real cart values
 - "Meus Pedidos" (order history) and "Minhas Informações" pages
 - Filter sidebar and "sort by" selector on the product listing
 - Coupon and shipping fields, size and colour pickers, star ratings
@@ -41,7 +42,7 @@ in the original code.
 
 | Layer | Technologies |
 | --- | --- |
-| Frontend | React 18, React Router 6, Sass (CSS Modules), Create React App |
+| Frontend | React 18, TypeScript (strict mode), React Router 6, Sass (CSS Modules), Create React App |
 | Backend | Node.js, TypeScript (strict mode, CommonJS output), Express 4, jsonwebtoken, bcrypt, cors, dotenv |
 | Persistence | JSON files on disk |
 | Tests | `node:test` + Supertest, run through `tsx` (API), Jest + React Testing Library (frontend) |
@@ -66,12 +67,18 @@ in the original code.
 │   ├── tsconfig.json        # type-check configuration (src + test)
 │   └── tsconfig.build.json  # build configuration (src -> dist)
 ├── frontend/
-│   └── src/
-│       ├── services/api.js  # API client (base URL, token, errors)
-│       ├── hooks/           # useProdutos
-│       ├── pages/           # Home, Produtos, Login, Cadastro, Compra, MeusPedidos
-│       ├── components/
-│       └── App.test.js      # frontend integration tests
+│   ├── src/
+│   │   ├── types/           # API contracts (products, user, login, cart) and form models
+│   │   ├── services/        # API client and runtime validation of API responses
+│   │   ├── contexts/        # AuthContext, CartContext, SearchContext (providers + hooks)
+│   │   ├── hooks/           # useProdutos, useProduto
+│   │   ├── utils/           # price formatting and discount calculation
+│   │   ├── routes/          # navigation links
+│   │   ├── pages/           # Home, Produtos, Login, Cadastro, Compra, MeusPedidos
+│   │   ├── components/      # one folder per component (index.tsx + styles.module.scss)
+│   │   ├── testes/          # fake API shared by the tests
+│   │   └── App.test.tsx     # frontend integration tests
+│   └── tsconfig.json        # strict type-check configuration
 ├── docs/screenshots/
 ├── scripts/setup-env.js     # creates .env with a random JWT secret
 ├── .env.example
@@ -95,8 +102,10 @@ Browser ── React SPA (localhost:3000)
   store on every authenticated request.
 - A cart belongs to the authenticated user. Cart routes never take a cart or user id from the client,
   and prices always come from the catalogue.
-- The frontend keeps the logged-in user and the cart in React context (`App.js`); the token is kept in
-  `localStorage`.
+- The frontend keeps the logged-in user, the cart and the search term in React contexts
+  (`frontend/src/contexts`); the token is kept in `localStorage`.
+- The frontend declares the API contracts as TypeScript types and checks every API response against
+  them at runtime before the data reaches a component.
 
 The full endpoint reference is in [backend/README.md](backend/README.md).
 
@@ -105,7 +114,8 @@ The full endpoint reference is in [backend/README.md](backend/README.md).
 Requirements: npm and Node.js 18.11 or newer (developed and tested only on Node.js 24).
 
 The backend is TypeScript. In development it runs straight from the sources with `tsx`; for
-production-style execution it is compiled to `backend/dist` and started with plain Node.js.
+production-style execution it is compiled to `backend/dist` and started with plain Node.js. The
+frontend is TypeScript compiled by Create React App (Babel); `tsc` is used only for type checking.
 
 ```bash
 npm run install:all   # installs root, backend and frontend dependencies
@@ -169,14 +179,17 @@ Run from the repository root:
 | `npm run dev` | Starts API and frontend together, with reload |
 | `npm run start:backend` | Compiles the API and starts the compiled JavaScript |
 | `npm run start:frontend` | Starts the frontend development server |
-| `npm run typecheck` | Type-checks the backend sources and tests (`tsc --noEmit`) |
+| `npm run typecheck` | Type-checks backend and frontend sources and tests (`tsc --noEmit`) |
+| `npm run typecheck:backend` / `npm run typecheck:frontend` | Type-checks one of them |
+| `npm run lint` | Lints the frontend with the Create React App ESLint rules, failing on any warning |
 | `npm test` | Runs backend and frontend tests |
 | `npm run test:backend` / `npm run test:frontend` | Runs one suite |
 | `npm run build` | Builds the backend (`backend/dist`) and the frontend (`frontend/build`) |
 | `npm run build:backend` / `npm run build:frontend` | Builds one of them |
-| `npm run validate` | Type check, tests, then both builds |
+| `npm run validate` | Type checks, frontend lint, tests, then both builds |
 
-Backend-only scripts are listed in [backend/README.md](backend/README.md).
+Backend-only scripts are listed in [backend/README.md](backend/README.md) and frontend-only scripts
+in [frontend/README.md](frontend/README.md).
 
 ## Tests
 
@@ -190,10 +203,14 @@ npm test
   concurrent writes, seed copying, stored-record validation and the on-disk file format. The tests
   are written in TypeScript, use a temporary data directory and their own secret, so they never
   touch local data.
-- **Frontend** (`frontend/src/App.test.js`): the whole application is rendered and only `fetch` is
-  replaced by a fake API with the same contract — product listing and search, API failure message,
-  product page, login (invalid and valid), session restore and logout, sign-up, and adding a product
-  to the cart.
+- **Frontend** (`frontend/src/**/*.test.ts(x)`), written in TypeScript:
+  - `App.test.tsx` renders the whole application and replaces only `fetch` with a typed fake API
+    that follows the backend contracts — product listing, search and empty results, API failure and
+    out-of-contract responses, product page, login (invalid and valid), session restore, rejected
+    tokens and logout, sign-up (success, validation and duplicate e-mail), and the cart (add, change
+    quantity, remove, empty, API errors and expired session).
+  - Unit tests cover response validation, the HTTP client (headers, error mapping, token storage),
+    the price helpers and the context hooks.
 
 ## Security notes
 
@@ -225,15 +242,28 @@ Changes made to the original code when the two projects were merged:
 - **Stored data is validated, not migrated.** Every read checks the JSON files against the
   TypeScript models; a file edited by hand into an unexpected shape makes the affected routes answer
   `500` until it is fixed or deleted.
-- **Types stop at the API boundary.** The frontend is still JavaScript and does not share the
-  backend types.
+- **Contracts are duplicated, not shared.** The frontend declares its own copy of the API types
+  (`frontend/src/types`) instead of importing the backend ones, to keep the two packages
+  independent. Runtime validation in the frontend catches a mismatch as an error message, but
+  nothing fails at compile time if the two copies drift apart.
+- **Frontend TypeScript is pinned to 4.9**, the newest line supported by Create React App 5, while
+  the backend uses a newer compiler.
 - **No rate limiting** on login or sign-up, no e-mail verification and no password recovery.
 - **No HTTPS or security headers** are configured by the application; a deployment would need them.
 - **No orders or payments.** Checkout is a static screen and the cart is not converted into an order.
-- **One image per product.** The gallery on the product page repeats the same image.
-- The sign-up form treats the newsletter checkbox as mandatory, as in the original project.
+- **One image per product.** The gallery on the product page repeats the same image; its arrows and
+  thumbnails only switch the selected thumbnail and the background colour.
+- **No marketing preference or terms of use.** The newsletter checkbox of the original sign-up form
+  was removed, because the API has nowhere to store that choice, and the project has no terms of use
+  or privacy policy document to be accepted.
+- The sign-up form still requires every field it shows, including the ones that are not sent to the
+  API.
 - The frontend uses Create React App, which is no longer maintained; `npm audit` reports
-  vulnerabilities in its build-time dependencies. Lint warnings from the original components remain.
+  vulnerabilities in its build-time dependencies, and its tooling prints Node.js deprecation and
+  outdated Browserslist notices during tests and builds.
+- **Accessibility was improved, not audited.** Links, buttons, form field names and image
+  alternatives were fixed in the main flows and the product gallery is keyboard-operable, but no
+  screen reader testing was done.
 - Interface texts and API messages are in Portuguese.
 
 ## Credits
@@ -261,5 +291,5 @@ Team, as listed in the original READMEs:
 - Jorge Silva — [@jorge-sillva](https://github.com/jorge-sillva)
 - Emanuel
 
-Monorepo unification, API integration, security fixes, tests and the backend migration to TypeScript
-by Matheus Freire.
+Monorepo unification, API integration, security fixes, tests and the backend and frontend migrations
+to TypeScript by Matheus Freire.
