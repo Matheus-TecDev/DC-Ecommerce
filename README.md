@@ -42,10 +42,10 @@ in the original code.
 
 | Layer | Technologies |
 | --- | --- |
-| Frontend | React 18, TypeScript (strict mode), React Router 6, Sass (CSS Modules), Create React App |
+| Frontend | React 18, TypeScript (strict mode), React Router 6, Sass (CSS Modules), Vite |
 | Backend | Node.js, TypeScript (strict mode, CommonJS output), Express 4, jsonwebtoken, bcrypt, cors, dotenv |
 | Persistence | JSON files on disk |
-| Tests | `node:test` + Supertest, run through `tsx` (API), Jest + React Testing Library (frontend) |
+| Tests | `node:test` + Supertest, run through `tsx` (API), Vitest + React Testing Library (frontend) |
 
 ## Repository structure
 
@@ -78,7 +78,12 @@ in the original code.
 │   │   ├── components/      # one folder per component (index.tsx + styles.module.scss)
 │   │   ├── testes/          # fake API shared by the tests
 │   │   └── App.test.tsx     # frontend integration tests
-│   └── tsconfig.json        # strict type-check configuration
+│   ├── public/              # static files copied as-is (favicon, manifest, icons)
+│   ├── index.html           # HTML entry point
+│   ├── vite.config.ts       # dev server, /api proxy, build and Vitest configuration
+│   ├── eslint.config.js     # ESLint flat config
+│   ├── tsconfig.json        # strict type-check configuration (src)
+│   └── tsconfig.node.json   # type-check configuration for vite.config.ts
 ├── docs/screenshots/
 ├── scripts/setup-env.js     # creates .env with a random JWT secret
 ├── .env.example
@@ -90,6 +95,7 @@ in the original code.
 ```text
 Browser ── React SPA (localhost:3000)
               │  fetch + "Authorization: Bearer <JWT>"
+              │  development: /api/* → Vite proxy; production build: API URL directly
               ▼
         Express API (localhost:3001)
               │  CORS allow-list → JSON body → routes
@@ -111,11 +117,13 @@ The full endpoint reference is in [backend/README.md](backend/README.md).
 
 ## Getting started
 
-Requirements: npm and Node.js 18.11 or newer (developed and tested only on Node.js 24).
+Requirements: npm and Node.js 20.19+ or 22.12+, the versions Vite 7 supports (developed and tested
+only on Node.js 24).
 
 The backend is TypeScript. In development it runs straight from the sources with `tsx`; for
 production-style execution it is compiled to `backend/dist` and started with plain Node.js. The
-frontend is TypeScript compiled by Create React App (Babel); `tsc` is used only for type checking.
+frontend is served and bundled by Vite; `tsc` is used only for type checking, and the frontend build
+runs it before bundling.
 
 ```bash
 npm run install:all   # installs root, backend and frontend dependencies
@@ -144,9 +152,17 @@ Backend variables live in a `.env` file at the repository root (never committed)
 | `SALT_HASH` | `10` | bcrypt cost factor |
 | `CORS_ORIGIN` | `http://localhost:3000` | Comma-separated list of allowed origins |
 
-The frontend has one optional variable, `REACT_APP_API_URL` (default `http://localhost:3001`), set in
-`frontend/.env` — see [frontend/.env.example](frontend/.env.example). It is embedded in the bundle, so
-it must never hold a secret.
+Frontend variables are optional and go in `frontend/.env` — see
+[frontend/.env.example](frontend/.env.example):
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `VITE_API_URL` | empty | API base URL. When empty, the development server sends requests to `/api`, which it proxies to the API, and a production build uses `http://localhost:3001`. Set it for any deployed build. It is embedded in the bundle, so it must never hold a secret. |
+| `API_PROXY_TARGET` | `http://localhost:3001` | Where the development server proxies `/api`. Read only by `vite.config.ts`; never sent to the browser. |
+
+In development the browser only talks to `localhost:3000`, so CORS is not involved. A production
+build calls the API directly, so its origin must be listed in `CORS_ORIGIN`. `npm run
+preview:frontend` serves the build on port 3000, which the default `CORS_ORIGIN` already allows.
 
 ### Demo accounts
 
@@ -178,13 +194,14 @@ Run from the repository root:
 | `npm run setup` | Creates `.env` (does not overwrite an existing one) |
 | `npm run dev` | Starts API and frontend together, with reload |
 | `npm run start:backend` | Compiles the API and starts the compiled JavaScript |
-| `npm run start:frontend` | Starts the frontend development server |
+| `npm run start:frontend` | Starts the frontend development server (Vite) |
+| `npm run preview:frontend` | Serves the frontend production build on port 3000 |
 | `npm run typecheck` | Type-checks backend and frontend sources and tests (`tsc --noEmit`) |
 | `npm run typecheck:backend` / `npm run typecheck:frontend` | Type-checks one of them |
-| `npm run lint` | Lints the frontend with the Create React App ESLint rules, failing on any warning |
+| `npm run lint` | Lints the frontend (ESLint, TypeScript, React hooks and accessibility rules), failing on any warning |
 | `npm test` | Runs backend and frontend tests |
 | `npm run test:backend` / `npm run test:frontend` | Runs one suite |
-| `npm run build` | Builds the backend (`backend/dist`) and the frontend (`frontend/build`) |
+| `npm run build` | Builds the backend (`backend/dist`) and the frontend (`frontend/build`, type-checked first) |
 | `npm run build:backend` / `npm run build:frontend` | Builds one of them |
 | `npm run validate` | Type checks, frontend lint, tests, then both builds |
 
@@ -203,12 +220,14 @@ npm test
   concurrent writes, seed copying, stored-record validation and the on-disk file format. The tests
   are written in TypeScript, use a temporary data directory and their own secret, so they never
   touch local data.
-- **Frontend** (`frontend/src/**/*.test.ts(x)`), written in TypeScript:
+- **Frontend** (`frontend/src/**/*.test.ts(x)`), written in TypeScript and run by Vitest in jsdom:
   - `App.test.tsx` renders the whole application and replaces only `fetch` with a typed fake API
     that follows the backend contracts — product listing, search and empty results, API failure and
     out-of-contract responses, product page, login (invalid and valid), session restore, rejected
-    tokens and logout, sign-up (success, validation and duplicate e-mail), and the cart (add, change
-    quantity, remove, empty, API errors and expired session).
+    tokens and logout, sign-up (success without any consent checkbox, validation and duplicate
+    e-mail), the cart (add, change quantity, remove, empty, API errors and expired session), the
+    product gallery (mouse and keyboard) and the demonstration checkout (no card fields, no API
+    calls).
   - Unit tests cover response validation, the HTTP client (headers, error mapping, token storage),
     the price helpers and the context hooks.
 
@@ -246,11 +265,12 @@ Changes made to the original code when the two projects were merged:
   (`frontend/src/types`) instead of importing the backend ones, to keep the two packages
   independent. Runtime validation in the frontend catches a mismatch as an error message, but
   nothing fails at compile time if the two copies drift apart.
-- **Frontend TypeScript is pinned to 4.9**, the newest line supported by Create React App 5, while
-  the backend uses a newer compiler.
+- **Different compilers.** The frontend uses TypeScript 5.9 and the backend TypeScript 7, because
+  `typescript-eslint`, used to lint the frontend, supports TypeScript only up to 6.0.
 - **No rate limiting** on login or sign-up, no e-mail verification and no password recovery.
 - **No HTTPS or security headers** are configured by the application; a deployment would need them.
-- **No orders or payments.** Checkout is a static screen and the cart is not converted into an order.
+- **No orders or payments.** Checkout is a demonstration: it asks for no card data, sends nothing,
+  and the cart is not converted into an order.
 - **One image per product.** The gallery on the product page repeats the same image; its arrows and
   thumbnails only switch the selected thumbnail and the background colour.
 - **No marketing preference or terms of use.** The newsletter checkbox of the original sign-up form
@@ -258,9 +278,9 @@ Changes made to the original code when the two projects were merged:
   or privacy policy document to be accepted.
 - The sign-up form still requires every field it shows, including the ones that are not sent to the
   API.
-- The frontend uses Create React App, which is no longer maintained; `npm audit` reports
-  vulnerabilities in its build-time dependencies, and its tooling prints Node.js deprecation and
-  outdated Browserslist notices during tests and builds.
+- `npm audit` reports advisories in two runtime dependencies kept at their current versions:
+  `react-router-dom` 6.4.3 (fixed in later 6.x releases) and `better-react-carousel`, which pulls in
+  old `lodash` and `picomatch` copies and is only used by the unrendered `Banner` component.
 - **Accessibility was improved, not audited.** Links, buttons, form field names and image
   alternatives were fixed in the main flows and the product gallery is keyboard-operable, but no
   screen reader testing was done.
