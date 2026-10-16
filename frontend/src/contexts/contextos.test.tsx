@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { useAuth } from './AuthContext';
 import { useCarrinho } from './CartContext';
 import { useSearch } from './SearchContext';
@@ -19,8 +20,17 @@ function ConsumidorBusca() {
 }
 
 describe('hooks de contexto fora do provider', () => {
+  function erroEsperado(evento: ErrorEvent): void {
+    evento.preventDefault();
+  }
+
   beforeEach(() => {
-    jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    window.addEventListener('error', erroEsperado);
+  });
+
+  afterEach(() => {
+    window.removeEventListener('error', erroEsperado);
   });
 
   test('useAuth falha com uma mensagem clara', () => {

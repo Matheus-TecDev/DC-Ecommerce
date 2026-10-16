@@ -1,4 +1,5 @@
 import { act } from '@testing-library/react';
+import { vi } from 'vitest';
 import type {
   CarrinhoDetalhado,
   ItemCarrinhoDetalhado,
@@ -179,7 +180,7 @@ export function criarApiFalsa({ carrinho = [], respostas = {} }: OpcoesApiFalsa 
     return resposta(404, { erro: 'Rota não encontrada' });
   }
 
-  jest.spyOn(global, 'fetch').mockImplementation((input, init) => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
     const chamada = lerChamada(input, init);
     registradas.push(chamada);
     const promessa = Promise.resolve().then(() => responder(chamada));

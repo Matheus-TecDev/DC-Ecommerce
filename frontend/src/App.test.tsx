@@ -1,6 +1,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import App from './App';
 import { CHAVE_TOKEN, CLIENTE, PRODUTOS, TOKEN, criarApiFalsa } from './testes/apiFalsa';
 import type { ApiFalsa, OpcoesApiFalsa } from './testes/apiFalsa';
@@ -95,7 +96,7 @@ describe('produtos', () => {
   });
 
   test('mostra uma mensagem de erro quando a API está fora do ar', async () => {
-    jest.spyOn(global, 'fetch').mockRejectedValue(new TypeError('Failed to fetch'));
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new TypeError('Failed to fetch'));
     abrir('/produtos');
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível conectar ao servidor');

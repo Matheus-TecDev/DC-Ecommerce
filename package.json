@@ -4,14 +4,15 @@
   "private": true,
   "description": "Digital Store - e-commerce Full Stack educacional (React/TypeScript + Node.js/Express/TypeScript) desenvolvido na Digital College.",
   "engines": {
-    "node": ">=18.11"
+    "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
     "setup": "node scripts/setup-env.js",
     "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
-    "dev": "concurrently -n api,web -c magenta,cyan \"npm --prefix backend run dev\" \"npm --prefix frontend start\"",
+    "dev": "concurrently -n api,web -c magenta,cyan \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
     "start:backend": "npm --prefix backend run build && npm --prefix backend start",
-    "start:frontend": "npm --prefix frontend start",
+    "start:frontend": "npm --prefix frontend run dev",
+    "preview:frontend": "npm --prefix frontend run preview",
     "typecheck": "npm run typecheck:backend && npm run typecheck:frontend",
     "typecheck:backend": "npm --prefix backend run typecheck",
     "typecheck:frontend": "npm --prefix frontend run typecheck",
@@ -21,7 +22,7 @@
     "build:frontend": "npm --prefix frontend run build",
     "test": "npm run test:backend && npm run test:frontend",
     "test:backend": "npm --prefix backend test",
-    "test:frontend": "npm --prefix frontend test -- --watchAll=false",
+    "test:frontend": "npm --prefix frontend test",
     "validate": "npm run typecheck && npm run lint && npm test && npm run build"
   },
   "devDependencies": {

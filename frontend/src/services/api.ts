@@ -24,7 +24,9 @@ import {
 } from './validacao';
 import type { Validador } from './validacao';
 
-export const API_URL = (process.env.REACT_APP_API_URL || 'http://localhost:3001').replace(/\/+$/, '');
+const API_PADRAO = import.meta.env.DEV ? '/api' : 'http://localhost:3001';
+
+export const API_URL = (import.meta.env.VITE_API_URL || API_PADRAO).replace(/\/+$/, '');
 
 const CHAVE_TOKEN = 'digitalstore.token';
 
