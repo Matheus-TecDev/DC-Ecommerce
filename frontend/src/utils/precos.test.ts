@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { formatarPreco, precoComDesconto } from './precos';
 
 describe('precoComDesconto', () => {

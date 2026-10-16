@@ -1,40 +1,73 @@
 # Digital Store — Frontend
 
 React 18 single-page application of the Digital Store project, written in TypeScript and built with
-Create React App, React Router 6 and Sass (CSS Modules). Setup and the feature list are in the
+Vite, React Router 6 and Sass (CSS Modules). Setup and the feature list are in the
 [main README](../README.md).
 
+Requires Node.js 20.19+ or 22.12+ (developed on Node.js 24).
+
 ```bash
-npm start                     # development server on http://localhost:3000
-npm run typecheck             # tsc --noEmit over sources and tests
-npm run lint                  # ESLint (Create React App rules), fails on any warning
-npm test -- --watchAll=false  # Jest + React Testing Library
-npm run build                 # production build in ./build
+npm install
+npm run dev          # development server on http://localhost:3000, proxies /api to the API
+npm run typecheck    # tsc --noEmit for src and for vite.config.ts
+npm run lint         # ESLint, fails on any warning
+npm test             # Vitest + React Testing Library, single non-interactive run
+npm run test:watch   # Vitest in watch mode
+npm run build        # type check, then production build in ./build
+npm run preview      # serves ./build on http://localhost:3000
 ```
 
-The API must be running for products, login and the cart to work. Its URL comes from
-`REACT_APP_API_URL` (default `http://localhost:3001`) — see [.env.example](.env.example). The value
-is embedded in the bundle, so it must never hold a secret.
+The API must be running for products, login and the cart to work. From the repository root,
+`npm run dev` starts both; on its own the API is started with `npm --prefix ../backend run dev`.
+
+## API address
+
+| Variable | Default | Used by |
+| --- | --- | --- |
+| `VITE_API_URL` | empty | The browser code. When empty, development uses `/api` (proxied) and a production build uses `http://localhost:3001`. Embedded in the bundle, so it must never hold a secret. |
+| `API_PROXY_TARGET` | `http://localhost:3001` | `vite.config.ts` only: target of the `/api` proxy of the development server. |
+
+Copy [.env.example](.env.example) to `.env` to change them.
+
+- **Development** (`npm run dev`): requests go to `http://localhost:3000/api/...` and Vite forwards
+  them to `API_PROXY_TARGET` without the `/api` prefix. The browser never makes a cross-origin
+  request, so `CORS_ORIGIN` does not matter.
+- **Production build** (`npm run build`): there is no proxy. The bundle calls `VITE_API_URL`, or
+  `http://localhost:3001` when it is empty, so the site origin must be in the API `CORS_ORIGIN`.
+  Set `VITE_API_URL` when building for any other host.
+- The production build is a static SPA. The server that hosts it must answer unknown paths (such as
+  `/produtos/2`) with `index.html`; `npm run preview` already does this.
 
 ## TypeScript setup
 
-- [tsconfig.json](tsconfig.json) enables `strict` plus `noUncheckedIndexedAccess`,
-  `noImplicitReturns`, `noImplicitOverride`, `noUnusedLocals` and `noUnusedParameters`, the same
-  extra checks used by the backend. JavaScript files are not accepted (`allowJs: false`).
-- TypeScript only type-checks (`noEmit`). Create React App compiles the code with Babel, which is why
-  `isolatedModules` is on and `module`, `moduleResolution` and `jsx` use the values it requires.
-- TypeScript is pinned to the 4.9 line, the newest one supported by `react-scripts` 5.
-- [src/react-app-env.d.ts](src/react-app-env.d.ts) loads the Create React App type declarations for
-  SCSS modules, images and `process.env`. Class names from a SCSS module are typed as
-  `string | undefined`, because the module typing cannot know which classes exist.
+- [tsconfig.json](tsconfig.json) covers `src` (application and tests) with `strict` plus
+  `noUncheckedIndexedAccess`, `noImplicitReturns`, `noImplicitOverride`, `noUnusedLocals` and
+  `noUnusedParameters`, the same extra checks used by the backend. Its only global types are
+  `vite/client` (asset imports, SCSS modules, `import.meta.env`), so browser code cannot use Node.js
+  globals.
+- [tsconfig.node.json](tsconfig.node.json) covers `vite.config.ts` with Node.js types.
+- [src/vite-env.d.ts](src/vite-env.d.ts) declares the `VITE_API_URL` variable.
+- TypeScript only type-checks (`noEmit`); Vite transpiles the code. The frontend uses TypeScript 5.9
+  rather than the backend's TypeScript 7, because `typescript-eslint` supports TypeScript only up to
+  6.0.
+- Class names from a SCSS module are typed as `string | undefined`, because the module typing cannot
+  know which classes exist.
 - The source contains no `any`, type assertions (other than `as const`), non-null assertions or
   compiler suppression comments.
+
+## Lint
+
+[eslint.config.js](eslint.config.js) applies the ESLint and `typescript-eslint` recommended rules,
+the React hooks rules (`rules-of-hooks`, `exhaustive-deps`) and the same accessibility rules from
+`eslint-plugin-jsx-a11y` that Create React App enabled.
 
 ## Code organization
 
 ```text
+index.html               # HTML entry point, loads src/index.tsx
+public/                  # favicon, manifest and icons, copied to the build as-is
 src/
-├── index.tsx            # entry point: React root + BrowserRouter
+├── index.tsx            # React root + BrowserRouter
 ├── App.tsx              # providers, header selection and route table
 ├── types/
 │   ├── modelos.ts       # Produto, UsuarioPublico, UsuarioSessao, cart models, credentials
@@ -49,7 +82,8 @@ src/
 ├── routes/routes.ts     # navigation links
 ├── pages/               # route-level screens
 ├── components/          # one folder per component: index.tsx + styles.module.scss
-└── testes/apiFalsa.ts   # typed fake API used by the tests
+├── testes/apiFalsa.ts   # typed fake API used by the tests
+└── setupTests.ts        # jest-dom matchers and cleanup after each test
 ```
 
 ## How it talks to the API
@@ -90,15 +124,17 @@ newer cart request was sent.
 | `/produtos/carrinho` | Cart | API (requires login to have items) |
 | `/login` | Login | API |
 | `/cadastro`, `/cadastro/:email` | Sign-up | API |
-| `/finalizarcompra` | Checkout | static form; summary from the cart |
-| `/comprafinalizada` | Order completed | static |
+| `/finalizarcompra` | Demonstration checkout | form that is never sent; summary from the cart |
+| `/comprafinalizada` | Demonstration completed | static, fictional data |
 | `/meuspedidos` | Orders and profile | static |
 
 Unknown routes redirect to the home page.
 
 ## Tests
 
-`npm test -- --watchAll=false` runs:
+`npm test` runs Vitest once in a jsdom environment ([vite.config.ts](vite.config.ts), `test`
+section). Test files import `describe`, `test`, `expect` and `vi` from `vitest`; mocks created with
+`vi.spyOn` are restored after every test, and `VITE_API_URL` is fixed to `http://localhost:3001`.
 
 - [src/App.test.tsx](src/App.test.tsx): the whole application rendered with a memory router, with
   only `fetch` replaced by [src/testes/apiFalsa.ts](src/testes/apiFalsa.ts). Elements are found by
@@ -109,13 +145,18 @@ Unknown routes redirect to the home page.
 
 ## Known limitations
 
-- The checkout, "order completed", order history and profile screens, the filter sidebar, the sort
-  selector, the coupon and shipping fields, the size and colour pickers and the social login icons
-  are layout only, as described in the [main README](../README.md#features).
+- The checkout and "demonstration completed" screens, the order history and profile screens, the
+  filter sidebar, the sort selector, the coupon and shipping fields, the size and colour pickers and
+  the social login icons are layout only, as described in the [main README](../README.md#features).
+  The checkout says so on screen and asks for no card data.
 - The components `Banner`, `Destaques`, `ContainerFinalizarCompra` and `SliderProdutoSelecionado`
-  come from the original project and are not rendered by any route. They were migrated to
-  TypeScript but have no tests.
+  come from the original project and are not rendered by any route. They have no tests.
 - Several stylesheets declare element selectors (`input`, `u`, `*`) that CSS Modules does not scope,
   so they apply to the whole application. They were left as they are to preserve the current look.
-- Create React App is no longer maintained. Its tooling prints a Node.js `punycode` deprecation
-  notice during tests and an outdated Browserslist notice during builds.
+- The development server does not run the type checker; run `npm run typecheck` (the build does it
+  automatically).
+- CSS is no longer passed through Autoprefixer as it was with Create React App. The only prefixes it
+  added were `::-webkit-input-placeholder` copies of `::placeholder` rules, which current browsers do
+  not need.
+- The tests still use React Testing Library 13 and user-event 13, the versions used before the move
+  to Vitest.

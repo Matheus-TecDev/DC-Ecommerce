@@ -1,10 +1,12 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import type { MockInstance } from 'vitest';
 import { API_URL, ErroApi, api, mensagemDeErro, sessao, sessaoExpirada, urlImagem } from './api';
 
 const CHAVE_TOKEN = 'digitalstore.token';
 
-function responder(status: number, corpo: unknown): jest.SpyInstance {
-  return jest
-    .spyOn(global, 'fetch')
+function responder(status: number, corpo: unknown): MockInstance<typeof fetch> {
+  return vi
+    .spyOn(globalThis, 'fetch')
     .mockImplementation(async () =>
       new Response(JSON.stringify(corpo), { status, headers: { 'Content-Type': 'application/json' } })
     );
@@ -34,15 +36,15 @@ describe('sessão', () => {
   });
 
   test('não quebra quando o armazenamento está indisponível', () => {
-    jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('bloqueado');
     });
-    jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('bloqueado');
     });
     expect(sessao.token()).toBeNull();
     expect(() => sessao.salvar('abc')).not.toThrow();
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 });
 
@@ -85,14 +87,14 @@ describe('requisições', () => {
   });
 
   test('erro HTTP sem corpo JSON usa a mensagem genérica', async () => {
-    jest.spyOn(global, 'fetch').mockResolvedValue(new Response('<html>', { status: 500 }));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('<html>', { status: 500 }));
     const erro = await capturar(api.listarProdutos());
     expect(mensagemDeErro(erro)).toBe('Ocorreu um erro inesperado. Tente novamente.');
     expect(sessaoExpirada(erro)).toBe(false);
   });
 
   test('falha de rede vira ErroApi sem status', async () => {
-    jest.spyOn(global, 'fetch').mockRejectedValue(new TypeError('Failed to fetch'));
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new TypeError('Failed to fetch'));
     const erro = await capturar(api.listarProdutos());
     expect(erro).toBeInstanceOf(ErroApi);
     expect(erro).toHaveProperty('status', null);
