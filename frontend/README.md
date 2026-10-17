@@ -124,7 +124,7 @@ newer cart request was sent.
 | `/produtos/carrinho` | Cart | API (requires login to have items) |
 | `/login` | Login | API |
 | `/cadastro`, `/cadastro/:email` | Sign-up | API |
-| `/finalizarcompra` | Demonstration checkout | form that is never sent; summary from the cart |
+| `/finalizarcompra` | Demonstration checkout | payment method choice that is never sent; summary from the cart |
 | `/comprafinalizada` | Demonstration completed | static, fictional data |
 | `/meuspedidos` | Orders and profile | static |
 
@@ -148,8 +148,8 @@ section). Test files import `describe`, `test`, `expect` and `vi` from `vitest`;
 - The checkout and "demonstration completed" screens, the order history and profile screens, the
   filter sidebar, the sort selector, the coupon and shipping fields, the size and colour pickers and
   the social login icons are layout only, as described in the [main README](../README.md#features).
-  The checkout says so on screen and asks for no card data.
-- The components `Banner`, `Destaques`, `ContainerFinalizarCompra` and `SliderProdutoSelecionado`
+  The checkout says so on screen and asks for no personal, delivery or card data.
+- The components `Banner`, `Destaques` and `SliderProdutoSelecionado`
   come from the original project and are not rendered by any route. They have no tests.
 - Several stylesheets declare element selectors (`input`, `u`, `*`) that CSS Modules does not scope,
   so they apply to the whole application. They were left as they are to preserve the current look.

@@ -10,7 +10,6 @@
         margin-top: 50px;
         background-color: white;
         width: 838px;
-        min-height: 1048px;
         border-radius: 4px;
         padding: 30px;
 
@@ -42,97 +41,6 @@
 
         .aviso {
             margin-top: 20px;
-        }
-
-        .informacoesPessoais {
-            label {
-                font-weight: 500;
-                font-size: 14px;
-                line-height: 22px;
-                color: #8F8F8F;
-                letter-spacing: 0.25px;
-                margin: 0 10px 10px 0;
-            }
-
-            p {
-                font-weight: 500;
-                font-size: 14px;
-                line-height: 22px;
-                letter-spacing: 0.25px;
-                color: #1F1F1F;
-            }
-
-            .tituloInfPessoais {
-                font-weight: 700;
-                font-size: 16px;
-                line-height: 24px;
-                color: #474747;
-                letter-spacing: 0.75px;
-                margin-bottom: 10px;
-            }
-
-            .nome {
-                display: flex;
-            }
-
-            .cpf {
-                display: flex;
-            }
-
-            .email {
-                display: flex;
-            }
-
-            .celular {
-                display: flex;
-            }
-
-        }
-
-        .informacoesDeEntrega {
-
-            label {
-                font-weight: 500;
-                font-size: 14px;
-                line-height: 22px;
-                color: #8F8F8F;
-                letter-spacing: 0.25px;
-                margin: 0 10px 10px 0;
-            }
-
-            p {
-                font-weight: 500;
-                font-size: 14px;
-                line-height: 22px;
-                letter-spacing: 0.25px;
-                color: #1F1F1F;
-            }
-
-            .tituloEntrega {
-                font-weight: 700;
-                font-size: 16px;
-                line-height: 24px;
-                color: #474747;
-                letter-spacing: 0.75px;
-                margin-bottom: 10px;
-            }
-
-            .endereco {
-                display: flex;
-
-            }
-
-            .bairro {
-                display: flex;
-            }
-
-            .cidade {
-                display: flex;
-            }
-
-            .cep {
-                display: flex;
-            }
         }
 
         .informacoesDePagamento {
@@ -252,7 +160,6 @@
     .container {
         .containerCompra {
             width: 315px;
-            min-height: 1048px;
             margin-top: 34.5px;
 
             .titulo {

@@ -24,68 +24,6 @@ export default function FinalizarCompra() {
                     />
                 </div>
                 <hr />
-                <div className={estilo.informacoesPessoais}>
-                    <div className={estilo.tituloInfPessoais}>
-                        Informações Pessoais
-                    </div>
-                    <div className={estilo.nome}>
-                        <label>Nome:</label>
-                        <p>
-                            Francisco Antonio Pereira
-                        </p>
-                    </div>
-                    <div className={estilo.cpf}>
-                        <label>CPF:</label>
-                        <p>
-                            123485913-35
-                        </p>
-
-                    </div>
-                    <div className={estilo.email}>
-                        <label>Email:</label>
-                        <p>
-                            francisco@email.example
-                        </p>
-
-                    </div>
-                    <div className={estilo.celular}>
-                        <label>Celular:</label>
-                        <p>
-                            (85) 5555-5555
-                        </p>
-                    </div>
-                </div>
-                <hr />
-                <div className={estilo.informacoesDeEntrega}>
-                    <div className={estilo.tituloEntrega}>
-                        Informações de Entrega
-                    </div>
-                    <div className={estilo.endereco}>
-                        <label>Endereço:</label>
-                        <p>
-                            Rua João Pessoa, 333
-                        </p>
-                    </div>
-                    <div className={estilo.bairro}>
-                        <label>Bairro:</label>
-                        <p>
-                            Centro
-                        </p>
-                    </div>
-                    <div className={estilo.cidade}>
-                        <label>Cidade:</label>
-                        <p>
-                            Fortaleza, Ceará
-                        </p>
-                    </div>
-                    <div className={estilo.cep}>
-                        <label>CEP:</label>
-                        <p>
-                            433-8800
-                        </p>
-                    </div>
-                </div>
-                <hr />
                 <div className={estilo.informacoesDePagamento}>
                     <div className={estilo.tituloPagamento}>
                         Informações de Pagamento

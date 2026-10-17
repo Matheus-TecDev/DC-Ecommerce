@@ -1,6 +1,6 @@
 .container {
     width: 32.5vw;
-    height: 532px;
+    min-height: 532px;
     padding: 30px;
     border-radius: 4px;
     background-color: #FFFFFF;
@@ -151,7 +151,7 @@
 @media (max-width:900px) {
     .container {
         width: 315px;
-        height: 514px;
+        min-height: 514px;
 
         .titulo {
             font-size: 14px;

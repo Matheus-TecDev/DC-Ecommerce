@@ -543,12 +543,29 @@ describe('checkout demonstrativo', () => {
     expect(screen.queryByText(/Realizar Pagamento/i)).not.toBeInTheDocument();
   });
 
-  test('preencher e concluir o checkout não envia nada à API', async () => {
+  test('não solicita dados pessoais nem de entrega', async () => {
     abrir('/finalizarcompra');
+    await apiFalsa.ociosa();
+
+    expect(screen.getAllByRole('note')[0]).toHaveTextContent('nenhum dado pessoal é solicitado');
+    for (const campo of screen.getAllByRole('textbox')) {
+      expect(campo).toHaveAccessibleName('Pesquisar produto');
+    }
+    expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Informações Pessoais|Informações de Entrega/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Nome Completo|CPF|Celular|Endereço|Bairro|Cidade|CEP|Complemento/)).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/nome|cpf|e-?mail|celular|endere[cç]o|bairro|cidade|cep|complemento/i)).not.toBeInTheDocument();
+    expect(screen.getAllByRole('radio')).toHaveLength(2);
+  });
+
+  test('concluir o checkout não envia nada à API', async () => {
+    autenticar();
+    prepararApi({ carrinho: [{ produto_id: '2', quantidade: 2 }] });
+    abrir('/finalizarcompra');
+    expect(await screen.findByText('2 x Tênis Sprint Pro')).toBeInTheDocument();
     await apiFalsa.ociosa();
     const chamadasAntes = apiFalsa.totalDeChamadas();
 
-    userEvent.type(screen.getByRole('textbox', { name: 'Nome Completo' }), 'Pessoa de Teste');
     userEvent.click(screen.getByRole('radio', { name: 'Boleto Bancário' }));
     userEvent.click(primeiro(screen.getAllByRole('link', { name: 'Concluir demonstração' })));
 
@@ -567,6 +584,10 @@ describe('checkout demonstrativo', () => {
     expect(screen.queryByText(/Titular do Cartão/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/\*{4,}/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Recibo/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Informações Pessoais|Informações de Entrega/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/CPF|Celular|Endereço|Bairro|CEP/)).not.toBeInTheDocument();
+    expect(screen.getByText('Demonstrativa, sem cobrança')).toBeInTheDocument();
+    expect(screen.getByText('Resumo da compra')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Voltar para Home' })).toHaveAttribute('href', '/');
   });
 });

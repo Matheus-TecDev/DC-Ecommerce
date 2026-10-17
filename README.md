@@ -31,8 +31,9 @@ in the original code.
 
 **Layout only (static, as designed in the course)**
 
-- Checkout form and "demonstration completed" page — both are labelled as a demonstration, no card
-  data is requested, nothing is sent, charged or stored; only the order summary shows real cart values
+- Checkout and "demonstration completed" pages — both are labelled as a demonstration, no personal,
+  delivery or card data is requested, nothing is sent, charged or stored; only the order summary
+  shows real cart values
 - "Meus Pedidos" (order history) and "Minhas Informações" pages
 - Filter sidebar and "sort by" selector on the product listing
 - Coupon and shipping fields, size and colour pickers, star ratings
@@ -226,8 +227,8 @@ npm test
     out-of-contract responses, product page, login (invalid and valid), session restore, rejected
     tokens and logout, sign-up (success without any consent checkbox, validation and duplicate
     e-mail), the cart (add, change quantity, remove, empty, API errors and expired session), the
-    product gallery (mouse and keyboard) and the demonstration checkout (no card fields, no API
-    calls).
+    product gallery (mouse and keyboard) and the demonstration checkout (no personal, delivery or
+    card fields, no API calls).
   - Unit tests cover response validation, the HTTP client (headers, error mapping, token storage),
     the price helpers and the context hooks.
 
@@ -269,8 +270,8 @@ Changes made to the original code when the two projects were merged:
   `typescript-eslint`, used to lint the frontend, supports TypeScript only up to 6.0.
 - **No rate limiting** on login or sign-up, no e-mail verification and no password recovery.
 - **No HTTPS or security headers** are configured by the application; a deployment would need them.
-- **No orders or payments.** Checkout is a demonstration: it asks for no card data, sends nothing,
-  and the cart is not converted into an order.
+- **No orders or payments.** Checkout is a demonstration: it asks for no personal, delivery or card
+  data, sends nothing, and the cart is not converted into an order.
 - **One image per product.** The gallery on the product page repeats the same image; its arrows and
   thumbnails only switch the selected thumbnail and the background colour.
 - **No marketing preference or terms of use.** The newsletter checkbox of the original sign-up form
