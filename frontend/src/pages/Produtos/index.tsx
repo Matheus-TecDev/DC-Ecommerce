@@ -1,9 +1,5 @@
 import estilo from './styles.module.scss'
-import Filtrar from '../../components/MenuFiltrar'
-import ProdutoCard from '../../components/ProdutoCard'
-import Ordenar from '../../components/MenuOrdenar'
-import { useSearch } from '../../contexts/SearchContext'
-import useProdutos from '../../hooks/useProdutos'
+import { MenuFiltrar, MenuOrdenar, ProdutoCard, useProdutos, useSearch } from '../../features/produtos'
 
 export default function Produtos() {
     const { produtos, carregando, erro } = useProdutos()
@@ -17,11 +13,11 @@ export default function Produtos() {
         <div className={estilo.teste}>
             <div className={estilo.container}>
                 <div className={estilo.Ordenar}>
-                    <Ordenar termo={search.trim()} total={produtosFiltrados.length} />
+                    <MenuOrdenar termo={search.trim()} total={produtosFiltrados.length} />
                 </div>
                 <div className={estilo.containerProdutos}>
                     <div className={estilo.menuFiltrar}>
-                        <Filtrar />
+                        <MenuFiltrar />
                     </div>
                     <div className={estilo.produtos}>
                         {carregando && <p>Carregando produtos...</p>}

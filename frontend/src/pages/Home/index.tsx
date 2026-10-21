@@ -1,8 +1,6 @@
-import ProdutosHome from "../../components/ProdutosHome";
-import OfertaEspecial from "../../components/OfertaEspecial";
+import { ProdutosHome } from "../../features/produtos";
+import { BannerHome, CardDestaques, OfertaEspecial } from "../../features/home";
 import styles from "./styles.module.scss";
-import CardDestaques from "../../components/CardDestaques";
-import BannerHome from "../../components/BannerHome"
 export default function Home() {
 	return (
 		<div className={styles.homeContainer}>

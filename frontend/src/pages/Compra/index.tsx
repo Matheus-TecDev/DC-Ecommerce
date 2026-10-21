@@ -1,7 +1,9 @@
-import FinalizarCompra from "../../components/FinalizaCompra";
-import InformacoesPagamento from "../../components/InformacoesPagamento";
-import FinalizarCompraResumo from "../../components/FinalizarCompraResumo";
-import AvisoDemonstrativo from "../../components/AvisoDemonstrativo";
+import {
+    AvisoDemonstrativo,
+    FinalizaCompra,
+    FinalizarCompraResumo,
+    InformacoesPagamento,
+} from "../../features/checkout";
 import styles from "./styles.module.scss";
 
 export default function Compra() {
@@ -18,7 +20,7 @@ export default function Compra() {
             
                 <div >
                     <InformacoesPagamento />
-                    <FinalizarCompra />
+                    <FinalizaCompra />
                 </div>
                 <FinalizarCompraResumo/>
            

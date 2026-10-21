@@ -76,15 +76,25 @@ src/
 ├── services/
 │   ├── api.ts           # the only module that calls fetch; token storage; ErroApi
 │   └── validacao.ts     # runtime validators that turn unknown JSON into typed models
-├── contexts/            # AuthContext, CartContext, SearchContext
-├── hooks/               # useProdutos (catalogue), useProduto (one product)
 ├── utils/precos.ts      # price formatting and discount calculation
 ├── routes/routes.ts     # navigation links
-├── pages/               # route-level screens
-├── components/          # one folder per component: index.tsx + styles.module.scss
+├── pages/               # route-level composition
+├── components/
+│   ├── layout/          # headers, footer and navigation
+│   └── ui/              # shared presentation components
+├── features/
+│   ├── auth/            # session context, login and sign-up
+│   ├── produtos/        # catalogue context, product hooks and components
+│   ├── carrinho/        # cart context, item list, summary and popover
+│   ├── checkout/        # demonstration checkout flow
+│   ├── home/            # home-only sections and assets
+│   └── perfil/          # profile and order-history presentation
 ├── testes/apiFalsa.ts   # typed fake API used by the tests
 └── setupTests.ts        # jest-dom matchers and cleanup after each test
 ```
+
+Each feature owns its context, hooks, components and feature-only assets. Shared layout and UI stay
+under `components`, while pages only compose features for each route.
 
 ## How it talks to the API
 
@@ -141,7 +151,7 @@ section). Test files import `describe`, `test`, `expect` and `vi` from `vitest`;
   role and accessible name.
 - `src/services/*.test.ts`: response validation and the HTTP client.
 - `src/utils/precos.test.ts`: discount rounding and price formatting.
-- `src/contexts/contextos.test.tsx`: hooks used outside their providers.
+- `src/features/contextos.test.tsx`: hooks used outside their providers.
 
 ## Known limitations
 

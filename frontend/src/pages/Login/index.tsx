@@ -1,4 +1,4 @@
-import LoginContainer from '../../components/LoginContainer'
+import { LoginContainer } from '../../features/auth'
 import styles from './styles.module.scss'
 import tenis1 from '../../assets/images/tenislogin1.png'
 import tenis2 from '../../assets/images/tenislogin2.png'
