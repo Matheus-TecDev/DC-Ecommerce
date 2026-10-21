@@ -1,4 +1,4 @@
-import CadastroContainer from "../../components/CadastroContainer";
+import { CadastroContainer } from "../../features/auth";
 import styles from './styles.module.scss'
 import tenisEsq from '../../assets/images/tenisCadastroEsq.png'
 import tenisDir from '../../assets/images/tenisCadastroDir.png'

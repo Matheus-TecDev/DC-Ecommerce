@@ -71,12 +71,11 @@ in the original code.
 │   ├── src/
 │   │   ├── types/           # API contracts (products, user, login, cart) and form models
 │   │   ├── services/        # API client and runtime validation of API responses
-│   │   ├── contexts/        # AuthContext, CartContext, SearchContext (providers + hooks)
-│   │   ├── hooks/           # useProdutos, useProduto
 │   │   ├── utils/           # price formatting and discount calculation
 │   │   ├── routes/          # navigation links
 │   │   ├── pages/           # Home, Produtos, Login, Cadastro, Compra, MeusPedidos
-│   │   ├── components/      # one folder per component (index.tsx + styles.module.scss)
+│   │   ├── components/      # shared UI and layout components
+│   │   ├── features/        # auth, products, cart, checkout, home and profile modules
 │   │   ├── testes/          # fake API shared by the tests
 │   │   └── App.test.tsx     # frontend integration tests
 │   ├── public/              # static files copied as-is (favicon, manifest, icons)
@@ -109,8 +108,8 @@ Browser ── React SPA (localhost:3000)
   store on every authenticated request.
 - A cart belongs to the authenticated user. Cart routes never take a cart or user id from the client,
   and prices always come from the catalogue.
-- The frontend keeps the logged-in user, the cart and the search term in React contexts
-  (`frontend/src/contexts`); the token is kept in `localStorage`.
+- The frontend keeps the logged-in user, the cart and the search term in contexts owned by their
+  respective modules under `frontend/src/features`; the token is kept in `localStorage`.
 - The frontend declares the API contracts as TypeScript types and checks every API response against
   them at runtime before the data reaches a component.
 

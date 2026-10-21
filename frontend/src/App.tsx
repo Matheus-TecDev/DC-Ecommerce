@@ -1,22 +1,20 @@
 import styles from './App.module.scss';
-import Header from './components/Header';
+import Header from './components/layout/Header';
 import Home from './pages/Home';
 import Produtos from './pages/Produtos';
 import MeusPedidos from './pages/MeusPedidos';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
-import Footer from './components/Footer';
+import Footer from './components/layout/Footer';
 import Compra from './pages/Compra';
-import ProdutoSelecionado from './components/ProdutoSelecionado';
-import HeaderMobile from './components/HeaderMobile';
-import CriarConta from './components/CriarConta';
-import HeaderAuth from './components/HeaderAuth';
-import MeusPedidosFinalizados from './components/MeusPedidosFinalizados';
-import CompraRealizada from './components/CompraRealizada';
-import { AuthProvider } from './contexts/AuthContext';
-import { CartProvider } from './contexts/CartContext';
-import { SearchProvider } from './contexts/SearchContext';
+import { ProdutoSelecionado, SearchProvider } from './features/produtos';
+import HeaderMobile from './components/layout/HeaderMobile';
+import { AuthProvider, CriarConta } from './features/auth';
+import HeaderAuth from './components/layout/HeaderAuth';
+import { MeusPedidosFinalizados } from './features/perfil';
+import { CompraRealizada } from './features/checkout';
+import { CartProvider } from './features/carrinho';
 
 function App() {
   const { pathname } = useLocation();
